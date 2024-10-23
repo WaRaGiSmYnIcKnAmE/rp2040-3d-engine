@@ -2,6 +2,8 @@
 #define ENGINE_H
 
 #include "engine/Vector.h"
-#include "engine/Buffer.h"
+#include "engine/Matrix.h"
+#include "engine/Transform.h"
+#include "engine/Color.h"
 
-#endif // ENGINE_H
+#endif
