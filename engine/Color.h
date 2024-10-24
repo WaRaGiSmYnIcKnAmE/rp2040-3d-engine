@@ -1,34 +1,25 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-struct Color
+class Color
 {
-    float r, g, b, a;
+public:
+    int r, g, b;
+    float a;
 
-    // Конструкторы
     Color() : r(0), g(0), b(0), a(0) {};
     Color(int red, int green, int blue, float alpha = 1.0f) : r(red), g(green), b(blue), a(alpha) {};
 
-    // Предустановленные цвета
-    static Color Red()
-    {
-        return Color(255, 0, 0.);
-    }
-    static Color Green()
-    {
-        return Color(0, 255, 0);
-    }
-    static Color Blue()
-    {
-        return Color(0, 0, 255);
-    }
-    static Color White()
-    {
-        return Color(255, 255, 255);
-    }
-    static Color Black()
-    {
-        return Color(0, 0, 0);
-    }
+    static Color Red();
+    static Color Green();
+    static Color Blue();
+    static Color White();
+    static Color Black();
+
+    // Function for mixing colors
+    Color mix(const Color &other, int factor) const;
+
+    // Function for color alignment for values [0, 255] and alfa [0, 1]
+    void clamp();
 };
 #endif // COLOR_H
