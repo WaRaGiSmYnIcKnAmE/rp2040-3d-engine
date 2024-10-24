@@ -1,11 +1,16 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "engine/Vector.h"
+#include "engine/Render.h"
+
+#include "engine/Vector2.h"
+#include "engine/Vector3.h"
 #include "engine/Matrix4.h"
 #include "engine/Transform.h"
 #include "engine/Color.h"
 #include "engine/Vertex.h"
 #include "engine/Mesh.h"
+
+#include "Defines.h"
 
 #endif

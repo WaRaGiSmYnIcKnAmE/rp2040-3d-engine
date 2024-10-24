@@ -5,7 +5,7 @@
 #include "Vertex.h" // Для хранения вершин
 #include "pico/stdlib.h"
 
-// Тип примитива: треугольники или линии
+// Triangle and Line primitive
 enum PrimitiveType
 {
     TRIANGLES,
@@ -26,9 +26,6 @@ public:
 
     // Index adding
     void addIndex(uint16_t index);
-
-    // Mesh render
-    void render() const;
 };
 
 #endif // MESH_H

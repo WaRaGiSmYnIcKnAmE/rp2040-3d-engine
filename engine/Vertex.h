@@ -1,7 +1,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include "Vector.h"
+#include "Vector3.h"
 #include "Color.h"
 
 // Struct for texture vertex

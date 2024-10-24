@@ -15,6 +15,7 @@ public:
     static Color Blue();
     static Color White();
     static Color Black();
+    static Color Purple();
 
     // Function for mixing colors
     Color mix(const Color &other, int factor) const;

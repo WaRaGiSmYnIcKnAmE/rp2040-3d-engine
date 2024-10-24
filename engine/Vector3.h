@@ -1,13 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
-
-// struct for use 2D Vectors
-struct Vector2
-{
-    int x, y;
-    Vector2() : x(0), y(0) {}
-    Vector2(int x, int y) : x(x), y(y) {}
-};
+#ifndef VECTOR3_H
+#define VECTOR3_H
 
 // struct for use 3D Vectors
 struct Vector3

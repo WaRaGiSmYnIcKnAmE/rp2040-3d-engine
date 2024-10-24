@@ -6,6 +6,8 @@
 #include "hardware/dma.h"
 #include "pico/multicore.h"
 
+#include "Defines.h"
+
 #define ILI9341_RST_PIN 15
 #define ILI9341_DC_PIN 8
 #define ILI9341_CS_PIN 9
@@ -13,9 +15,6 @@
 #define ILI9341_MOSI_PIN 11
 
 #define SPI_PORT spi0
-
-#define SCREEN_WIDTH 240
-#define SCREEN_HEIGHT 320
 
 #define ILI9341_SWRESET 0x01
 #define ILI9341_SLPOUT 0x11
