@@ -5,7 +5,7 @@
 
 uint16_t framebuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
-/*void core1_render_task()
+void core1_render_task()
 {
     // Init display on second core
     ili9341_init();
@@ -26,13 +26,12 @@ uint16_t framebuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
         sleep_ms(16); // FPS lock ~60fps
     }
-}*/
+}
 
 int main()
 {
     stdio_init_all();
-    ili9341_init();
-    // multicore_launch_core1(core1_render_task);
+    multicore_launch_core1(core1_render_task);
 
     while (true)
     {
