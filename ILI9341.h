@@ -6,7 +6,6 @@
 #include "hardware/dma.h"
 #include "pico/multicore.h"
 
-// Настройка пинов для дисплея
 #define ILI9341_RST_PIN 15
 #define ILI9341_DC_PIN 8
 #define ILI9341_CS_PIN 9
