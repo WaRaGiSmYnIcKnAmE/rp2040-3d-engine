@@ -5,5 +5,7 @@
 #include "engine/Matrix4.h"
 #include "engine/Transform.h"
 #include "engine/Color.h"
+#include "engine/Vertex.h"
+#include "engine/Mesh.h"
 
 #endif
