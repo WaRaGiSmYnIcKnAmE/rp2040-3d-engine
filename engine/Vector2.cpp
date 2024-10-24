@@ -13,7 +13,8 @@ Vector2 subVectors(const Vector2 &vector1, const Vector2 &vector2)
 
 Vector2 multiplyVectorByScalar(const Vector2 &vector, float scalar)
 {
-    return Vector2(vector.x * scalar, vector.y * scalar);
+    int fixedScalar = TO_FIXED(scalar);
+    return Vector2(MULT_FIXED(vector.x, fixedScalar), MULT_FIXED(vector.y, fixedScalar));
 }
 
 Vector2 normalizeVector(const Vector2 &vector)
@@ -29,5 +30,5 @@ Vector2 normalizeVector(const Vector2 &vector)
 
 int scalarProduct(const Vector2 &vector1, const Vector2 &vector2)
 {
-    return (vector1.x * vector2.x) + (vector1.y * vector2.y);
+    return FROM_FIXED(MULT_FIXED(vector1.x, vector2.x) + MULT_FIXED(vector1.y, vector2.y));
 }

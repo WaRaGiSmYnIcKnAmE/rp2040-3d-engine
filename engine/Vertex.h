@@ -2,28 +2,16 @@
 #define VERTEX_H
 
 #include "Vector3.h"
-#include "Color.h"
+#include "Vector2.h"
 
-// Struct for texture vertex
-struct UV
-{
-    float u, v;
-    UV() : u(0.0f), v(0.0f) {}
-    UV(float u, float v) : u(u), v(v) {}
-};
+struct Vertex {
+    Vector3 position;  // Позиция вершины в 3D пространстве
+    Vector2 texCoords; // Текстурные координаты (опционально, если нужен текстуринг)
 
-// Optimize vector struct
-struct Vertex
-{
-    Vector3 position; // Vertex position
-    Vector3 normal;   // Normalize of Vertex (for light)
-    Color color;      // Vertex color
-    UV texCoords;     // Texture coordinates
+    Vertex() : position(Vector3()), texCoords(Vector2()) {}
 
-    Vertex() : position(), normal(), color(), texCoords() {}
-
-    Vertex(const Vector3 &pos, const Vector3 &norm, const Color &col, const UV &tex)
-        : position(pos), normal(norm), color(col), texCoords(tex) {}
+    Vertex(Vector3 position, Vector2 texCoords)
+        : position(position), texCoords(texCoords) {}
 };
 
 #endif // VERTEX_H

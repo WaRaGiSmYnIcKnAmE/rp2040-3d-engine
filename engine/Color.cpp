@@ -2,11 +2,13 @@
 
 Color Color::mix(const Color &other, int factor) const
 {
+    int invFactor = 255 - factor;
     return Color(
-        r * (255 - factor) + other.r * factor,
-        g * (255 - factor) + other.g * factor,
-        b * (255 - factor) + other.b * factor,
-        a * (255 - factor) + other.a * factor);
+        (r * invFactor + other.r * factor) / 255,
+        (g * invFactor + other.g * factor) / 255,
+        (b * invFactor + other.b * factor) / 255,
+        FROM_FIXED((a * invFactor + other.a * factor) / 255)
+    );
 }
 
 void Color::clamp()
@@ -24,9 +26,20 @@ void Color::clamp()
     if (b > 255)
         b = 255;
     if (a < 0)
-        a = 0;
-    if (a > 255)
-        a = 255;
+        a = TO_FIXED(0.0f);
+    if (a > TO_FIXED(1.0f))
+        a = TO_FIXED(1.0f);
+
+}
+
+Color Color::White()
+{
+    return Color(255, 255, 255);
+}
+
+Color Color::Black()
+{
+    return Color(0, 0, 0);
 }
 
 Color Color::Red()
@@ -44,17 +57,16 @@ Color Color::Blue()
     return Color(0, 0, 255);
 }
 
-Color Color::White()
+Color Color::Cyan()
 {
-    return Color(255, 255, 255);
+    return Color(0, 255, 255);
 }
-
-Color Color::Black()
+Color Color::Yellow()
 {
-    return Color(0, 0, 0);
+    return Color(255, 255, 0);
 }
 
 Color Color::Purple()
 {
-    return Color(160, 32,240);
+    return Color(128, 0, 128);
 }

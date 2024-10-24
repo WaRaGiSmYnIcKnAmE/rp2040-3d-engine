@@ -35,43 +35,24 @@ int main()
 
     while (true)
     {
-        Vector3 cameraPosition = {0, 0, 0};
-        Camera camera = Camera(cameraPosition, Matrix4());
-
-        Mesh arrayOfMeshes[3] = { Mesh(), Mesh(), Mesh() };
-        Scene main_scene = {arrayOfMeshes, 3, camera};
-
         Vector3 a = {1, 2, 3};
         Vector3 b = {3, 2, 1};
 
-        addVectors(Vector2(3,7), Vector2(2,2));
-        Vector3 sum = addVectors(a, b);        // sum = {4, 4, 4}
-        Vector3 difference = subVectors(a, b); // difference = {-2, 0, 2}
+        Vector3 C = addVectors(a, b);
 
-        Matrix4 translationMatrix = Matrix4::translation(3, 4, 5);
-        Matrix4 scaleMatrix = Matrix4::scale(2, 2, 2);
-        Matrix4 rotationMatrix = Matrix4::rotationX(3.14159f / 4);
+        Vector3 D = multiplyVectorByScalar(a, 3);
 
-        Vector3 point(1, 2, 3);
+        int scalar = scalarProduct(a, b);
 
-        Vector3 transformedPoint = translationMatrix.multiply(point);
+        Matrix4 matrix = Matrix4::identity();
 
-        Color purple = Color(160, 32, 240); // Purple color
+        matrix.transpose();
 
-        purple.mix(Color(255, 255, 255, 0.5f), 0.7f);
-        purple.clamp();
+        matrix.rotationY(15);
 
-        Mesh mesh;
+        Color cyan = Color::Cyan();
 
-        // Create vertex
-        Vertex v1(Vector3(1, 1, 1), Vector3(0, 0, 1), Color(255, 0, 0), UV());
-        Vertex v2(Vector3(1, -1, 1), Vector3(0, 0, 1), Color(0, 255, 0), UV());
-        Vertex v3(Vector3(-1, -1, 1), Vector3(0, 0, 1), Color(0, 0, 255), UV());
-
-        // Add vertex to mesh
-        mesh.addVertex(v1);
-        mesh.addVertex(v2);
-        mesh.addVertex(v3);
+        cyan.mix(Color::White(), 3);
     }
 
     return 0;
