@@ -7,9 +7,7 @@ uint16_t framebuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
 void core1_render_task()
 {
-    // Init display on second core
-    ili9341_init();
-
+    ili9341_init(); // Инициализация дисплея
     while (true)
     {
         // Render frame to buffer
@@ -17,7 +15,7 @@ void core1_render_task()
         {
             for (int x = 0; x < SCREEN_WIDTH; x++)
             {
-                framebuffer[y * SCREEN_WIDTH + x] = 0x07E0; // For example: green color
+                framebuffer[y * SCREEN_WIDTH + x] = ILI9341_BLACK;
             }
         }
 

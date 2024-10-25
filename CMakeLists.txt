@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(3d-renderer 3d-renderer.cpp ILI9341.cpp engine/Vector3.cpp engine/Vector2.cpp engine/Matrix4.cpp engine/Color.cpp)
+add_executable(3d-renderer 3d-renderer.cpp ILI9341.cpp engine/Vector3.cpp engine/Vector2.cpp engine/Matrix4.cpp engine/Mesh.cpp engine/Color.cpp)
 
 pico_set_program_name(3d-renderer "3d-renderer")
 pico_set_program_version(3d-renderer "0.1")
@@ -49,7 +49,8 @@ target_link_libraries(3d-renderer
         pico_stdlib
         hardware_spi
         hardware_dma
-        pico_multicore)
+        pico_multicore
+        pico_platform)
 
 # Add the standard include files to the build
 target_include_directories(3d-renderer PRIVATE
