@@ -2,7 +2,7 @@
 #define MATRIX4_H
 
 #include "Vector3.h"
-#include <math.h> // Для работы с углами
+#include "pico/float.h" // Для работы с углами
 
 // Fixed-point настройки
 #define FIXED_POINT_SHIFT 16

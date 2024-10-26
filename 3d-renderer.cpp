@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "pico/stdlib.h"
 #include "Engine.h"
 #include "ILI9341.h"
