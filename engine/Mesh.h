@@ -42,10 +42,11 @@ public:
     static Mesh createSphere(int radius, int segments);
     static Mesh createPyramid(int baseSize, int height);
 
-private:
     std::vector<Vertex> vertices; // Массив вершин меша
     std::vector<int> indices;     // Индексация для треугольников и других примитивов
     Color color;                  // Цвет меша для применения общих эффектов
+
+    // private:
 };
 
 #endif // MESH_H

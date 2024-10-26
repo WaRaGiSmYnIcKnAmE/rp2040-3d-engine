@@ -2,17 +2,17 @@
 #define MATRIX4_H
 
 #include "Vector3.h"
-#include <math.h>  // Для работы с углами
+#include <math.h> // Для работы с углами
 
 // Fixed-point настройки
 #define FIXED_POINT_SHIFT 16
-#define TO_FIXED(x) ((int)((x) * (1 << FIXED_POINT_SHIFT)))  // float -> fixed-point
-#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT))  // fixed-point -> float
-#define MULT_FIXED(a, b) (((a) * (b)) >> FIXED_POINT_SHIFT)  // Умножение fixed-point
+#define TO_FIXED(x) ((int)((x) * (1 << FIXED_POINT_SHIFT)))   // float -> fixed-point
+#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT)) // fixed-point -> float
+#define MULT_FIXED(a, b) (((a) * (b)) >> FIXED_POINT_SHIFT)   // Умножение fixed-point
 
 struct Matrix4
 {
-    int data[4][4];  // Массив для хранения матрицы в формате fixed-point
+    int data[4][4]; // Массив для хранения матрицы в формате fixed-point
 
     // Конструктор по умолчанию
     Matrix4();
@@ -26,6 +26,10 @@ struct Matrix4
     // Умножение матрицы на вектор
     Vector3 multiply(const Vector3 &vec) const;
 
+    // Перегрузка операторов для умножения матриц
+    Matrix4 operator*(const Matrix4 &other) const; // Умножение матриц
+    Matrix4 &operator*=(const Matrix4 &other);     // Умножение и присвоение
+
     // Функции для трансформаций (перемещение, масштабирование, поворот)
     static Matrix4 translation(int x, int y, int z);
     static Matrix4 scale(int sx, int sy, int sz);
@@ -35,6 +39,8 @@ struct Matrix4
 
     // Транспонирование матрицы
     Matrix4 transpose() const;
+
+    static Matrix4 perspective(int fov, int aspectRatio, int near, int far);
 };
 
 #endif // MATRIX4_H

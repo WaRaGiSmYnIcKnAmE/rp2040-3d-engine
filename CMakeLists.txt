@@ -35,7 +35,17 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(3d-renderer 3d-renderer.cpp ILI9341.cpp engine/Vector3.cpp engine/Vector2.cpp engine/Matrix4.cpp engine/Mesh.cpp engine/Color.cpp)
+add_executable(3d-renderer
+                        3d-renderer.cpp
+                        ILI9341.cpp
+                        engine/Vector3.cpp
+                        engine/Vector2.cpp
+                        engine/Matrix4.cpp
+                        engine/Mesh.cpp
+                        engine/Color.cpp
+                        engine/Renderer.cpp
+                        engine/Object.cpp
+                        engine/Camera.cpp)
 
 pico_set_program_name(3d-renderer "3d-renderer")
 pico_set_program_version(3d-renderer "0.1")

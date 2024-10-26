@@ -3,15 +3,15 @@
 
 // Fixed-point настройки
 #define FIXED_POINT_SHIFT 16
-#define TO_FIXED(x) ((int)((x) * (1 << FIXED_POINT_SHIFT)))  // float -> fixed-point
-#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT))  // fixed-point -> float
-#define MULT_FIXED(a, b) (((a) * (b)) >> FIXED_POINT_SHIFT)  // Умножение fixed-point
+#define TO_FIXED(x) ((int)((x) * (1 << FIXED_POINT_SHIFT)))   // float -> fixed-point
+#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT)) // fixed-point -> float
+#define MULT_FIXED(a, b) (((a) * (b)) >> FIXED_POINT_SHIFT)   // Умножение fixed-point
 
 class Color
 {
 public:
     int r, g, b;
-    int a;  // Альфа канал теперь тоже хранится как int в формате fixed-point
+    int a; // Альфа канал теперь тоже хранится как int в формате fixed-point
 
     // Конструктор по умолчанию (значения по умолчанию для черного цвета)
     Color() : r(0), g(0), b(0), a(TO_FIXED(1.0f)) {}
@@ -37,6 +37,8 @@ public:
 
     // Функция для корректировки значений цвета в диапазоне [0, 255] и альфа [0, 1]
     void clamp();
+
+    uint16_t color565(uint8_t red, uint8_t green, uint8_t blue);
 };
 
 #endif // COLOR_H

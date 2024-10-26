@@ -1,3 +1,4 @@
+#include "pico/stdlib.h"
 #include "Color.h"
 
 Color Color::mix(const Color &other, int factor) const
@@ -7,8 +8,7 @@ Color Color::mix(const Color &other, int factor) const
         (r * invFactor + other.r * factor) / 255,
         (g * invFactor + other.g * factor) / 255,
         (b * invFactor + other.b * factor) / 255,
-        FROM_FIXED((a * invFactor + other.a * factor) / 255)
-    );
+        FROM_FIXED((a * invFactor + other.a * factor) / 255));
 }
 
 void Color::clamp()
@@ -29,7 +29,6 @@ void Color::clamp()
         a = TO_FIXED(0.0f);
     if (a > TO_FIXED(1.0f))
         a = TO_FIXED(1.0f);
-
 }
 
 Color Color::White()
@@ -69,4 +68,9 @@ Color Color::Yellow()
 Color Color::Purple()
 {
     return Color(128, 0, 128);
+}
+
+uint16_t Color::color565(uint8_t red, uint8_t green, uint8_t blue)
+{
+    return ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
 }

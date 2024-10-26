@@ -1,5 +1,5 @@
 #include "Matrix4.h"
-#include <math.h>
+#include "pico/float.h"
 
 // Конструктор по умолчанию: все элементы матрицы равны нулю
 Matrix4::Matrix4()
@@ -119,4 +119,46 @@ Matrix4 Matrix4::transpose() const
         }
     }
     return result;
+}
+
+Matrix4 Matrix4::perspective(int fov, int aspectRatio, int near, int far)
+{
+    Matrix4 result;
+    int tanHalfFOV = TO_FIXED(tanf(FROM_FIXED(fov) / 2.0f));
+    int range = near - far;
+
+    result.data[0][0] = MULT_FIXED(TO_FIXED(1), aspectRatio) / tanHalfFOV;
+    result.data[1][1] = TO_FIXED(1) / tanHalfFOV;
+    result.data[2][2] = (near + far) / range;
+    result.data[2][3] = MULT_FIXED(TO_FIXED(2) * near * far, 1) / range;
+    result.data[3][2] = TO_FIXED(-1);
+    result.data[3][3] = 0;
+
+    return result;
+}
+
+// Перегрузка оператора * для умножения матриц
+Matrix4 Matrix4::operator*(const Matrix4 &other) const
+{
+    Matrix4 result;
+    for (int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            int sum = 0;
+            for (int k = 0; k < 4; ++k)
+            {
+                sum += MULT_FIXED(data[i][k], other.data[k][j]);
+            }
+            result.data[i][j] = sum;
+        }
+    }
+    return result;
+}
+
+// Перегрузка оператора *= для умножения матриц и присвоения
+Matrix4 &Matrix4::operator*=(const Matrix4 &other)
+{
+    *this = *this * other;
+    return *this;
 }
