@@ -60,7 +60,8 @@ target_link_libraries(3d-renderer
         hardware_spi
         hardware_dma
         pico_multicore
-        pico_platform)
+        pico_platform
+        pico_printf)
 
 # Add the standard include files to the build
 target_include_directories(3d-renderer PRIVATE

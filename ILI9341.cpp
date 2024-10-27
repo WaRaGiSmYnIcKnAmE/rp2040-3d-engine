@@ -1,6 +1,10 @@
 #include "ILI9341.h"
 #include "hardware/spi.h"
 #include "pico/platform.h"
+#include <stdio.h>
+#include "engine/Vector2.h"
+
+#include "display/font.h"
 
 int dma_channel;
 
@@ -92,7 +96,7 @@ void fill_screen(uint16_t color)
 {
     set_address_window(0, 0, 239, 319); // Для ILI9341 240x320
 
-    uint8_t data[2] = {color >> 8, color & 0xFF};
+    uint8_t data[2] = {(color >> 8), (color & 0xFF)};
     for (uint32_t i = 0; i < 240 * 320; i++)
     {
         send_data(data, 2); // Отправляем цвет пикселя
@@ -139,4 +143,83 @@ void ili9341_send_data_dma(uint8_t *data, size_t length)
 
     // Освобождаем канал DMA после завершения
     dma_channel_unclaim(dma_channel);
+}
+
+// Простейшая функция для вывода текста на дисплей
+void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, ...)
+{
+    char buffer[256]; // Буфер для форматированной строки
+
+    // Инициализация переменных аргументов
+    va_list args;
+    va_start(args, format);
+
+    // Форматирование строки с переменными аргументами
+    vsnprintf(buffer, sizeof(buffer), format, args);
+
+    // Завершение работы с переменными аргументами
+    va_end(args);
+
+    int x = position.x;
+    int y = position.y;
+
+    const char *text = buffer;
+    while (*text)
+    {
+        if (*text == '\n')
+        {                      // Проверка на символ новой строки
+            x += 8 * fontSize; // Увеличиваем y для переноса строки (высота шрифта)
+            y = position.x;    // Сброс x на начальную позицию
+        }
+        else
+        {
+            ili9341_render_char(x, y, *text, fontSize);
+            y += 6 * fontSize; // Переход к следующему символу
+        }
+
+        /*ili9341_render_char(y, x, *text, fontSize);
+        x += 6 * fontSize;*/
+
+        text++;
+    }
+
+    // delete[] buffer;
+}
+
+// Отображение символа на дисплей
+void ili9341_render_char(uint16_t x, uint16_t y, char c, uint8_t fontSize)
+{
+    const uint8_t *glyph = font_get_bitmap(c);
+    uint16_t color = 0xFFFF; // Цвет символа (например, белый)
+
+    // Проходим по строкам и столбцам символа
+    for (int row = 0; row < 7; ++row)
+    {
+        for (int col = 0; col < 5; ++col)
+        {
+            if (glyph[col] & (1 << (6 - row)))
+            { // Проверка нужного бита в байте столбца
+                ili9341_fill_rect(x + col * fontSize, y + row * fontSize, fontSize, fontSize, 0xFFFF);
+            }
+        }
+    }
+}
+
+void ili9341_fill_rect(int x, int y, int w, int h, uint16_t color)
+{
+    for (int i = 0; i < h; i++)
+    {
+        for (int j = 0; j < h; j++)
+        {
+            ili9341_draw_pixel(x + i, y + j, color);
+        }
+    }
+}
+
+void ili9341_draw_pixel(int x, int y, uint16_t color)
+{
+    set_address_window(x, y, x, y); // Для ILI9341 240x320
+
+    uint8_t data[2] = {(color >> 8), (color & 0xFF)};
+    send_data(data, 2); // Отправляем цвет пикселя
 }

@@ -5,6 +5,7 @@
 #include "hardware/spi.h"
 #include "hardware/dma.h"
 #include "pico/multicore.h"
+#include "engine/Vector2.h"
 
 #include "Defines.h"
 
@@ -106,6 +107,9 @@
 #define ILI9341_GREENYELLOW 0xAFE5 ///< 173, 255,  41
 #define ILI9341_PINK 0xFC18        ///< 255, 130, 198
 
+// Размер буфера строки для текста
+#define TEXT_BUFFER_SIZE 128
+
 // DMA chennel
 extern int dma_channel;
 
@@ -124,10 +128,21 @@ void send_command(uint8_t cmd);
 // Function for sending data to the display
 void send_data(uint8_t *data, size_t len);
 
+// Reset display
 void reset_display();
 
+// Set address window
 void set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
+// Fill screen
 void fill_screen(uint16_t color);
+
+void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, ...);
+
+void ili9341_render_char(uint16_t x, uint16_t y, char c, uint8_t fontSize);
+
+void ili9341_fill_rect(int x, int y, int w, int h, uint16_t color);
+
+void ili9341_draw_pixel(int x, int y, uint16_t color);
 
 #endif // ILI9341_H
