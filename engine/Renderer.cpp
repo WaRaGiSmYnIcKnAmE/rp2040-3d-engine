@@ -21,8 +21,8 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
         Object *obj = scene.objects[i];
 
         Matrix4 modelMatrix = obj->getTransformationMatrix();
-        Matrix4 viewMatrix = obj->getViewMatrix({4.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 10.0f, 0.0f});
-        Matrix4 projectionMatrix = obj->getProjectionMatrix(70.0f, width / height, 0.1f, 100.0f);
+        Matrix4 viewMatrix = obj->getViewMatrix({4.0f, 4.0f, 2.0f}, {0.0f, 0.0f, 10.0f}, {0.0f, 10.0f, 0.0f});
+        Matrix4 projectionMatrix = obj->getProjectionMatrix(90.0f, width / height, 0.1f, 100.0f);
 
         Matrix4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
@@ -32,35 +32,24 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
             Vertex v1 = obj->mesh->vertices[obj->mesh->indices[j + 1]];
             Vertex v2 = obj->mesh->vertices[obj->mesh->indices[j + 2]];
 
-            drawLine(frameBuffer, width, height, /*MVPMatrix * */v0.position, /*MVPMatrix * */v1.position);
-            drawLine(frameBuffer, width, height, /*MVPMatrix * */v1.position, /*MVPMatrix * */v2.position);
-            drawLine(frameBuffer, width, height, /*MVPMatrix * */v2.position, /*MVPMatrix * */v0.position);
+            Vector3 vector0 = obj->applyMVP(MVPMatrix, v0.position);
+            Vector3 vector1 = obj->applyMVP(MVPMatrix, v1.position);
+            Vector3 vector2 = obj->applyMVP(MVPMatrix, v2.position);
+
+            drawLine(frameBuffer, width, height, vector0, vector1);
+            drawLine(frameBuffer, width, height, vector1, vector2);
+            drawLine(frameBuffer, width, height, vector2, vector0);
         }
     }
-}
-
-Vector3 Renderer::projectVertex(const Vector3 &position, int width, int height, const Matrix4 &viewMatrix, const Matrix4 &projectionMatrix)
-{
-    Vector3 transformed = viewMatrix * position;
-
-    if (transformed.z <= 0)
-        transformed.z = 1;
-
-    transformed = projectionMatrix * transformed;
-
-    float screenX = (int2float(width) / 2.0f) + fix2float((transformed.x * FOCAL_LENGTH) / transformed.z, FIXED_POINT_SHIFT) * (int2float(width) / 2.0f);
-    float screenY = (int2float(height) / 2.0f) - fix2float((transformed.y * FOCAL_LENGTH) / transformed.z, FIXED_POINT_SHIFT) * (int2float(height) / 2.0f);
-
-    return Vector3(screenX, screenY, fix2float(transformed.z, FIXED_POINT_SHIFT));
 }
 
 // Алгоритм Брезенхэма для рисования линии
 void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1)
 {
-    int x0 = fix2float(v0.x, FIXED_POINT_SHIFT) + 100;
-    int y0 = fix2float(v0.y, FIXED_POINT_SHIFT) + 100;
-    int x1 = fix2float(v1.x, FIXED_POINT_SHIFT) + 100;
-    int y1 = fix2float(v1.y, FIXED_POINT_SHIFT) + 100;
+    int x0 = fix2float(v0.x, FIXED_POINT_SHIFT);
+    int y0 = fix2float(v0.y, FIXED_POINT_SHIFT);
+    int x1 = fix2float(v1.x, FIXED_POINT_SHIFT);
+    int y1 = fix2float(v1.y, FIXED_POINT_SHIFT);
 
     int dx = abs(x1 - x0);
     int dy = abs(y1 - y0);

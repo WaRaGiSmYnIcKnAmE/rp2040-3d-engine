@@ -25,6 +25,8 @@ public:
     Matrix4 getTransformationMatrix() const;
     Matrix4 getViewMatrix(const Vector3 &cameraPosition, const Vector3 &target, const Vector3 &up);
     Matrix4 getProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane);
+
+    Vector3 applyMVP(const Matrix4 &MVP, const Vector3 &vertex);
 };
 
 #endif // OBJECT_H

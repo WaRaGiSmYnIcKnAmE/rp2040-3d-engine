@@ -15,7 +15,7 @@ void core1_render_task()
     Camera camera;
 
     // Создаем куб с размерами 80 единиц
-    Mesh cubeMesh = Mesh::createCube(50);
+    Mesh cubeMesh = Mesh::createCube(10);
 
     // Создаем объект с позицией в пределах видимости камеры
     Object cubeObject;

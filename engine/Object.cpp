@@ -71,3 +71,33 @@ Matrix4 Object::getProjectionMatrix(float fov, float aspectRatio, float nearPlan
 
     return projectionMatrix;
 }
+
+// Применяет матрицу MVP к вертексу с использованием fixed-point арифметики
+Vector3 Object::applyMVP(const Matrix4 &MVP, const Vector3 &vertex)
+{
+    int32_t w = float2fix(1.0f, FIXED_POINT_SHIFT); // единица в формате fixed-point для w
+
+    // Умножение матрицы на вектор
+    int32_t x = float2fix(
+        fix2float(MVP.data[0][0] * vertex.x + MVP.data[0][1] * vertex.y + MVP.data[0][2] * vertex.z + MVP.data[0][3] * w, FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    int32_t y = float2fix(
+        fix2float(MVP.data[1][0] * vertex.x + MVP.data[1][1] * vertex.y + MVP.data[1][2] * vertex.z + MVP.data[1][3] * w, FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    int32_t z = float2fix(
+        fix2float(MVP.data[2][0] * vertex.x + MVP.data[2][1] * vertex.y + MVP.data[2][2] * vertex.z + MVP.data[2][3] * w, FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    int32_t wOut = float2fix(
+        fix2float(MVP.data[3][0] * vertex.x + MVP.data[3][1] * vertex.y + MVP.data[3][2] * vertex.z + MVP.data[3][3] * w, FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+
+    // Нормализация координат (если используется перспектива)
+    if (wOut != 0)
+    {
+        x = float2fix(fix2float(x, FIXED_POINT_SHIFT) / fix2float(wOut, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
+        y = float2fix(fix2float(y, FIXED_POINT_SHIFT) / fix2float(wOut, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
+        z = float2fix(fix2float(z, FIXED_POINT_SHIFT) / fix2float(wOut, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
+    }
+
+    return Vector3(x, y, z);
+}
