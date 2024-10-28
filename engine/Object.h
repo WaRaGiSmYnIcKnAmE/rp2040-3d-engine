@@ -23,6 +23,8 @@ public:
     void setVisible(bool isVisible) { visible = isVisible; }
 
     Matrix4 getTransformationMatrix() const;
+    Matrix4 getViewMatrix(const Vector3 &cameraPosition, const Vector3 &target, const Vector3 &up);
+    Matrix4 getProjectionMatrix(float fov, float aspectRatio, float nearPlane, float farPlane);
 };
 
 #endif // OBJECT_H

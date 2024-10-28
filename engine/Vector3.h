@@ -3,6 +3,7 @@
 
 #include "pico/stdlib.h"
 #include "pico/float.h"
+#include "pico/double.h"
 
 #define FIXED_POINT_SHIFT 16
 
@@ -59,6 +60,14 @@ struct Vector3
         outY = fix2float(y, FIXED_POINT_SHIFT);
         outZ = fix2float(z, FIXED_POINT_SHIFT);
     }
+
+    // Dot product
+    int32_t dot(const Vector3 &other) const
+    {
+        return ((x * other.x) >> FIXED_POINT_SHIFT) +
+               ((y * other.y) >> FIXED_POINT_SHIFT) +
+               ((z * other.z) >> FIXED_POINT_SHIFT);
+    }
 };
 
 // Пример дополнительных функций для операций над векторами
@@ -77,5 +86,8 @@ Vector3 normalizeVector(const Vector3 &vector);
 
 // Скалярное произведение двух векторов
 int32_t scalarProduct(const Vector3 &vector1, const Vector3 &vector2);
+
+// Cross product
+Vector3 crossVectors(const Vector3 &vector1, const Vector3 &vector2);
 
 #endif // VECTOR3_H

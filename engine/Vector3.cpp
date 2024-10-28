@@ -42,3 +42,11 @@ int32_t scalarProduct(const Vector3 &vector1, const Vector3 &vector2)
 {
     return float2fix(fix2float(vector1.x, FIXED_POINT_SHIFT) * fix2float(vector2.x, FIXED_POINT_SHIFT) + fix2float(vector1.y, FIXED_POINT_SHIFT) * fix2float(vector2.y, FIXED_POINT_SHIFT) + fix2float(vector1.z, FIXED_POINT_SHIFT) * fix2float(vector2.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
 }
+
+Vector3 crossVectors(const Vector3 &vector1, const Vector3 &vector2)
+{
+    return Vector3(
+        ((vector1.y * vector2.z) - (vector1.z * vector2.y)),
+        ((vector1.z * vector2.x) - (vector1.x * vector2.z)),
+        ((vector1.x * vector2.y) - (vector1.y * vector2.x)));
+}

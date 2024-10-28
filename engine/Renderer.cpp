@@ -21,6 +21,10 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
         Object *obj = scene.objects[i];
 
         Matrix4 modelMatrix = obj->getTransformationMatrix();
+        Matrix4 viewMatrix = obj->getViewMatrix({4.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 10.0f, 0.0f});
+        Matrix4 projectionMatrix = obj->getProjectionMatrix(70.0f, width / height, 0.1f, 100.0f);
+
+        Matrix4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
         for (size_t j = 0; j < obj->mesh->indices.size(); j += 3)
         {
@@ -28,9 +32,9 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
             Vertex v1 = obj->mesh->vertices[obj->mesh->indices[j + 1]];
             Vertex v2 = obj->mesh->vertices[obj->mesh->indices[j + 2]];
 
-            drawLine(frameBuffer, width, height, v0.position, v1.position);
-            drawLine(frameBuffer, width, height, v1.position, v2.position);
-            drawLine(frameBuffer, width, height, v2.position, v0.position);
+            drawLine(frameBuffer, width, height, /*MVPMatrix * */v0.position, /*MVPMatrix * */v1.position);
+            drawLine(frameBuffer, width, height, /*MVPMatrix * */v1.position, /*MVPMatrix * */v2.position);
+            drawLine(frameBuffer, width, height, /*MVPMatrix * */v2.position, /*MVPMatrix * */v0.position);
         }
     }
 }
@@ -53,10 +57,10 @@ Vector3 Renderer::projectVertex(const Vector3 &position, int width, int height, 
 // Алгоритм Брезенхэма для рисования линии
 void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1)
 {
-    int x0 = fix2float(v0.x, FIXED_POINT_SHIFT) + 50;
-    int y0 = fix2float(v0.y, FIXED_POINT_SHIFT) + 50;
-    int x1 = fix2float(v1.x, FIXED_POINT_SHIFT) + 50;
-    int y1 = fix2float(v1.y, FIXED_POINT_SHIFT) + 50;
+    int x0 = fix2float(v0.x, FIXED_POINT_SHIFT) + 100;
+    int y0 = fix2float(v0.y, FIXED_POINT_SHIFT) + 100;
+    int x1 = fix2float(v1.x, FIXED_POINT_SHIFT) + 100;
+    int y1 = fix2float(v1.y, FIXED_POINT_SHIFT) + 100;
 
     int dx = abs(x1 - x0);
     int dy = abs(y1 - y0);

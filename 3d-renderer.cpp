@@ -21,7 +21,7 @@ void core1_render_task()
     Object cubeObject;
     cubeObject.mesh = &cubeMesh;
 
-    cubeObject.setPosition(Vector3(40.0f, 40.0f, 10.0f));
+    cubeObject.setPosition(Vector3(100.0f, 100.0f, 10.0f));
     cubeObject.setRotation(Vector3(30.0f, 0.0f, 45.0f));
     //  cubeObject.setScale(Vector3(10.0f, 10.0f, 10.0f));
 
@@ -29,7 +29,11 @@ void core1_render_task()
     Scene scene;
     scene.addObject(&cubeObject);
 
-    Matrix4 trMa = cubeObject.getTransformationMatrix();
+    Matrix4 modelMatrix = cubeObject.getTransformationMatrix();
+    Matrix4 viewMatrix = cubeObject.getViewMatrix({0.0f, 0.0f, 0.0f}, {40.0f, 40.0f, 10.0f}, {0.0f, 0.0f, 1.0f});
+    Matrix4 projectionMatrix = cubeObject.getProjectionMatrix(90.0f, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
+
+    Matrix4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
     // Matrix4 trMa = Matrix4::rotationY(float2fix(30.0f, FIXED_POINT_SHIFT));
 
@@ -45,11 +49,11 @@ void core1_render_task()
 
     // ili9341_draw_text({45, 45}, 1, "(%f, %f, %f)\n(%f, %f, %f)\n(%f, %f, %f)", cubeMesh.vertices[0].position.x, cubeMesh.vertices[0].position.y, cubeMesh.vertices[0].position.z, cubeMesh.vertices[1].position.x, cubeMesh.vertices[1].position.y, cubeMesh.vertices[1].position.z, cubeMesh.vertices[2].position.x, cubeMesh.vertices[3].position.y, cubeMesh.vertices[3].position.z);
 
-    /*ili9341_draw_text(Vector2(10, 10), 1, "Matrix transformation of cube object:\n{ %f, %f, %f, %f }\n{ %f, %f, %f, %f }\n{ %f, %f, %f, %f }\n{ %f, %f, %f, %f }",
-                      fix2float(trMa.data[0][0], FIXED_POINT_SHIFT), fix2float(trMa.data[0][1], FIXED_POINT_SHIFT), fix2float(trMa.data[0][2], FIXED_POINT_SHIFT), fix2float(trMa.data[0][3], FIXED_POINT_SHIFT),
-                      fix2float(trMa.data[1][0], FIXED_POINT_SHIFT), fix2float(trMa.data[1][1], FIXED_POINT_SHIFT), fix2float(trMa.data[1][2], FIXED_POINT_SHIFT), fix2float(trMa.data[1][3], FIXED_POINT_SHIFT),
-                      fix2float(trMa.data[2][0], FIXED_POINT_SHIFT), fix2float(trMa.data[2][1], FIXED_POINT_SHIFT), fix2float(trMa.data[2][2], FIXED_POINT_SHIFT), fix2float(trMa.data[2][3], FIXED_POINT_SHIFT),
-                      fix2float(trMa.data[3][0], FIXED_POINT_SHIFT), fix2float(trMa.data[3][1], FIXED_POINT_SHIFT), fix2float(trMa.data[3][2], FIXED_POINT_SHIFT), fix2float(trMa.data[3][3], FIXED_POINT_SHIFT));*/
+    ili9341_draw_text(Vector2(10, 10), 1, " MVP Matrix:\n{ %f, %f, %f, %f }\n{ %f, %f, %f, %f }\n{ %f, %f, %f, %f }\n{ %f, %f, %f, %f }",
+                      fix2float(MVPMatrix.data[0][0], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[0][1], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[0][2], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[0][3], FIXED_POINT_SHIFT),
+                      fix2float(MVPMatrix.data[1][0], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[1][1], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[1][2], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[1][3], FIXED_POINT_SHIFT),
+                      fix2float(MVPMatrix.data[2][0], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[2][1], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[2][2], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[2][3], FIXED_POINT_SHIFT),
+                      fix2float(MVPMatrix.data[3][0], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[3][1], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[3][2], FIXED_POINT_SHIFT), fix2float(MVPMatrix.data[3][3], FIXED_POINT_SHIFT));
 }
 
 int main()
