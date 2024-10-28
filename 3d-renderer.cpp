@@ -31,7 +31,7 @@ void core1_render_task()
     Scene scene;
     scene.addObject(&cubeObject);
 
-    Matrix4 trMa = cubeObject.getTransformationMatrix(); // Matrix4::translation(0.4f);
+    Matrix4 trMa = Matrix4::rotationX(cubeObject.position.x) * Matrix4::rotationY(cubeObject.position.y) * Matrix4::rotationZ(cubeObject.position.z) * Matrix4::translation(cubeObject.position.x,cubeObject.position.y,cubeObject.position.z); // cubeObject.getTransformationMatrix(); // Matrix4::translation(0.4f);
 
     // ili9341_draw_text(Vector2(5, 5), 1, "{%f, %f, %f}", fix2float(cubeObject.rotation.x, FIXED_POINT_SHIFT), fix2float(cubeObject.rotation.y, FIXED_POINT_SHIFT), fix2float(cubeObject.rotation.z, FIXED_POINT_SHIFT));
 

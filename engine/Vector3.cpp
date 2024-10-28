@@ -12,12 +12,12 @@ Vector3 subVectors(const Vector3 &vector1, const Vector3 &vector2)
 }
 
 // Функция для умножения 3D-вектора на скаляр, используя фиксированную точку
-Vector3 multiplyVectorByScalar(const Vector3 &v, int scalar)
+Vector3 multiplyVectorByScalar(const Vector3 &vector, int scalar)
 {
     int32_t fixedScalar = float2fix(scalar, FIXED_POINT_SHIFT); // Преобразование в фиксированную точку
-    return Vector3(fix2float(v.x * fixedScalar, FIXED_POINT_SHIFT),
-                   fix2float(v.y * fixedScalar, FIXED_POINT_SHIFT),
-                   fix2float(v.z * fixedScalar, FIXED_POINT_SHIFT));
+    return Vector3(fix2float(vector.x * fixedScalar, FIXED_POINT_SHIFT),
+                   fix2float(vector.y * fixedScalar, FIXED_POINT_SHIFT),
+                   fix2float(vector.z * fixedScalar, FIXED_POINT_SHIFT));
 }
 
 // Функция для нормализации 3D-вектора (преобразование в единичный вектор)

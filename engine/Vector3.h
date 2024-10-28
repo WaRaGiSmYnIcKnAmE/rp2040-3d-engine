@@ -4,10 +4,9 @@
 #include "pico/stdlib.h"
 #include "pico/float.h"
 
-// Фиксированное значение масштаба (16 дробных бит)
 #define FIXED_POINT_SHIFT 16
 
-// struct для работы с 3D-векторами на базе fixed-point
+// struct for use 3D Vectors with use fixed-point
 struct Vector3
 {
     int32_t x, y, z;
