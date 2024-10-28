@@ -25,6 +25,7 @@ void core1_render_task()
 
     cubeObject.setPosition(Vector3(40.0f, 40.0f, 10.0f));
     cubeObject.setRotation(Vector3(0, 30.0f, 90.0f));
+    cubeObject.setScale(Vector3(10.0f, 10.0f, 10.0f));
 
     // Инициализируем сцену и добавляем объект на сцену
     Scene scene;
@@ -34,19 +35,20 @@ void core1_render_task()
 
     // ili9341_draw_text(Vector2(5, 5), 1, "{%f, %f, %f}", fix2float(cubeObject.rotation.x, FIXED_POINT_SHIFT), fix2float(cubeObject.rotation.y, FIXED_POINT_SHIFT), fix2float(cubeObject.rotation.z, FIXED_POINT_SHIFT));
 
-    /*ili9341_draw_text(Vector2(5, 5), 1, "{%f, %f, %f, %f}\n{%f, %f, %f, %f}\n{%f, %f, %f, %f}\n{%f, %f, %f, %f}",
+    ili9341_draw_text(Vector2(5, 5), 1, "Matrix4:");
+    ili9341_draw_text(Vector2(15, 15), 1, "{%f, %f, %f, %f}\n{%f, %f, %f, %f}\n{%f, %f, %f, %f}\n{%f, %f, %f, %f}",
                       fix2float(trMa.data[0][0], FIXED_POINT_SHIFT), fix2float(trMa.data[0][1], FIXED_POINT_SHIFT), fix2float(trMa.data[0][2], FIXED_POINT_SHIFT), fix2float(trMa.data[0][3], FIXED_POINT_SHIFT),
                       fix2float(trMa.data[1][0], FIXED_POINT_SHIFT), fix2float(trMa.data[1][1], FIXED_POINT_SHIFT), fix2float(trMa.data[1][2], FIXED_POINT_SHIFT), fix2float(trMa.data[1][3], FIXED_POINT_SHIFT),
                       fix2float(trMa.data[2][0], FIXED_POINT_SHIFT), fix2float(trMa.data[2][1], FIXED_POINT_SHIFT), fix2float(trMa.data[2][2], FIXED_POINT_SHIFT), fix2float(trMa.data[2][3], FIXED_POINT_SHIFT),
-                      fix2float(trMa.data[3][0], FIXED_POINT_SHIFT), fix2float(trMa.data[3][1], FIXED_POINT_SHIFT), fix2float(trMa.data[3][2], FIXED_POINT_SHIFT), fix2float(trMa.data[3][3], FIXED_POINT_SHIFT));*/
+                      fix2float(trMa.data[3][0], FIXED_POINT_SHIFT), fix2float(trMa.data[3][1], FIXED_POINT_SHIFT), fix2float(trMa.data[3][2], FIXED_POINT_SHIFT), fix2float(trMa.data[3][3], FIXED_POINT_SHIFT));
 
     while (true)
     {
-        // Renderer::renderFrame(frameBuffer, SCREEN_WIDTH, SCREEN_HEIGHT, camera, scene);
+        Renderer::renderFrame(frameBuffer, SCREEN_WIDTH, SCREEN_HEIGHT, camera, scene);
 
-        Renderer::drawLine(frameBuffer, 320, 240, cubeObject.scale, cubeObject.position);
+        // Renderer::drawLine(frameBuffer, 320, 240, cubeObject.scale, cubeObject.position);
 
-        ili9341_send_framebuffer(frameBuffer);
+        // ili9341_send_framebuffer(frameBuffer);
 
         frame += 1;
 

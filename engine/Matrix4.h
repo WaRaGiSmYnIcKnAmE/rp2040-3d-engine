@@ -24,7 +24,8 @@ struct Matrix4
 
     // Перегрузка операторов для умножения матриц
     Matrix4 operator*(const Matrix4 &other) const; // Умножение матриц
-    Matrix4 &operator*=(const Matrix4 &other);     // Умножение и присвоение
+    Vector3 operator*(const Vector3 &vec) const;
+    Matrix4 &operator*=(const Matrix4 &other); // Умножение и присвоение
 
     // Функции для трансформаций (перемещение, масштабирование, поворот)
     static Matrix4 translation(int32_t x, int32_t y, int32_t z);

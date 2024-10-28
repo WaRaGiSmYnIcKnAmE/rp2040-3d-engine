@@ -62,8 +62,6 @@ Vector3 Matrix4::multiply(const Vector3 &vec) const
     return result;
 }
 
-// Функции трансформации (перевод в fixed-point)
-
 // Перемещение
 Matrix4 Matrix4::translation(int32_t x, int32_t y, int32_t z)
 {
@@ -169,6 +167,31 @@ Matrix4 Matrix4::operator*(const Matrix4 &other) const
             result.data[i][j] = sum;
         }
     }
+    return result;
+}
+
+// Перегрузка оператора * для умножения матрицы на вектор
+Vector3 Matrix4::operator*(const Vector3 &vec) const
+{
+    Vector3 result;
+    result.x = float2fix(
+        (fix2float(data[0][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[0][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[0][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            fix2float(data[0][3], FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    result.y = float2fix(
+        (fix2float(data[1][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[1][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[1][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            fix2float(data[1][3], FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    result.z = float2fix(
+        (fix2float(data[2][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[2][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[2][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            fix2float(data[2][3], FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
     return result;
 }
 

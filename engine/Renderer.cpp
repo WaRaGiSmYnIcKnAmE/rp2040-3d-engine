@@ -43,13 +43,13 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
 
             // Простая отрисовка линии между вершинами треугольника
 
-            drawLine(frameBuffer, width, height, v0.position, v1.position);
+            /*drawLine(frameBuffer, width, height, v0.position, v1.position);
             drawLine(frameBuffer, width, height, v1.position, v2.position);
-            drawLine(frameBuffer, width, height, v2.position, v0.position);
+            drawLine(frameBuffer, width, height, v2.position, v0.position);*/
 
-            /*drawLine(frameBuffer, width, height, p0, p1);
+            drawLine(frameBuffer, width, height, p0, p1);
             drawLine(frameBuffer, width, height, p1, p2);
-            drawLine(frameBuffer, width, height, p2, p0);*/
+            drawLine(frameBuffer, width, height, p2, p0);
         }
     }
 }
@@ -58,20 +58,20 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
 Vector3 Renderer::projectVertex(const Vector3 &position, int width, int height, const Matrix4 &viewMatrix, const Matrix4 &projectionMatrix)
 {
     // Переводим вершину в пространство камеры
-    Vector3 transformed = viewMatrix.multiply(position);
+    Vector3 transformed = viewMatrix * position;
 
     // Проверяем значение Z, чтобы избежать деления на ноль
     if (transformed.z <= 0)
         transformed.z = 1; // Исправляем Z для корректного проецирования
 
     // Применяем перспективную проекцию
-    transformed = projectionMatrix.multiply(transformed);
+    transformed = projectionMatrix * transformed;
 
     // Нормализация координат после проекции
-    int screenX = (width / 2) + FROM_FIXED((transformed.x * FOCAL_LENGTH) / transformed.z) * (width / 2);
-    int screenY = (height / 2) - FROM_FIXED((transformed.y * FOCAL_LENGTH) / transformed.z) * (height / 2);
+    float screenX = (int2float(width) / 2.0f) + fix2float((transformed.x * FOCAL_LENGTH) / transformed.z, FIXED_POINT_SHIFT) * (int2float(width) / 2.0f);
+    float screenY = (int2float(height) / 2.0f) - fix2float((transformed.y * FOCAL_LENGTH) / transformed.z, FIXED_POINT_SHIFT) * (int2float(height) / 2.0f);
 
-    return Vector3(screenX, screenY, transformed.z);
+    return Vector3(screenX, screenY, fix2float(transformed.z, FIXED_POINT_SHIFT));
 }
 
 // Алгоритм Брезенхэма для рисования линии
