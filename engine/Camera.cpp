@@ -1,15 +1,16 @@
+#include "pico/float.h"
 #include "Camera.h"
 
 // Установка позиции
 void Camera::setPosition(int x, int y, int z)
 {
-    position = Vector3(x, y, z);
+    position = Vector3(int2float(x), int2float(y), int2float(z));
 }
 
 // Установка поворота
 void Camera::setRotation(int xAngle, int yAngle, int zAngle)
 {
-    rotation = Vector3(xAngle, yAngle, zAngle);
+    rotation = Vector3(int2float(xAngle), int2float(yAngle), int2float(zAngle));
 }
 
 // Перемещение вперед

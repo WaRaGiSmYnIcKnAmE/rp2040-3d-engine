@@ -4,15 +4,11 @@
 #include "Vector3.h"
 #include "pico/float.h" // Для работы с углами
 
-// Fixed-point настройки
 #define FIXED_POINT_SHIFT 16
-#define TO_FIXED(x) (((x) >= 0) ? ((int)((x) * (1 << FIXED_POINT_SHIFT))) : ((int)((x) * (1 << FIXED_POINT_SHIFT)))) // float -> fixed-point
-#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT))                                                        // fixed-point -> float
-#define MULT_FIXED(a, b) (((long long)(a) * (long long)(b)) >> FIXED_POINT_SHIFT)                                    // Умножение fixed-point
 
 struct Matrix4
 {
-    int data[4][4]; // Массив для хранения матрицы в формате fixed-point
+    int32_t data[4][4]; // Массив для хранения матрицы в формате fixed-point
 
     // Конструктор по умолчанию
     Matrix4();
@@ -31,16 +27,16 @@ struct Matrix4
     Matrix4 &operator*=(const Matrix4 &other);     // Умножение и присвоение
 
     // Функции для трансформаций (перемещение, масштабирование, поворот)
-    static Matrix4 translation(int x, int y, int z);
-    static Matrix4 scale(int sx, int sy, int sz);
-    static Matrix4 rotationX(int angleFixed);
-    static Matrix4 rotationY(int angleFixed);
-    static Matrix4 rotationZ(int angleFixed);
+    static Matrix4 translation(int32_t x, int32_t y, int32_t z);
+    static Matrix4 scale(int32_t sx, int32_t sy, int32_t sz);
+    static Matrix4 rotationX(int32_t angleFixed);
+    static Matrix4 rotationY(int32_t angleFixed);
+    static Matrix4 rotationZ(int32_t angleFixed);
 
     // Транспонирование матрицы
     Matrix4 transpose() const;
 
-    static Matrix4 perspective(int fov, int aspectRatio, int near, int far);
+    static Matrix4 perspective(int32_t fov, int32_t aspectRatio, int32_t near, int32_t far);
 };
 
 #endif // MATRIX4_H

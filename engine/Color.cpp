@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include "pico/float.h"
 #include "Color.h"
 
 Color Color::mix(const Color &other, int factor) const
@@ -8,7 +9,7 @@ Color Color::mix(const Color &other, int factor) const
         (r * invFactor + other.r * factor) / 255,
         (g * invFactor + other.g * factor) / 255,
         (b * invFactor + other.b * factor) / 255,
-        FROM_FIXED((a * invFactor + other.a * factor) / 255));
+        (fix2float(a * invFactor + other.a * factor, FIXED_POINT_SHIFT) / 255));
 }
 
 void Color::clamp()
@@ -26,9 +27,9 @@ void Color::clamp()
     if (b > 255)
         b = 255;
     if (a < 0)
-        a = TO_FIXED(0.0f);
-    if (a > TO_FIXED(1.0f))
-        a = TO_FIXED(1.0f);
+        a = float2fix(0.0f, FIXED_POINT_SHIFT);
+    if (a > 1.0f)
+        a = float2fix(1.0f, FIXED_POINT_SHIFT);
 }
 
 Color Color::White()

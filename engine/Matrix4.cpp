@@ -14,7 +14,7 @@ Matrix4 Matrix4::identity()
 {
     Matrix4 result;
     for (int i = 0; i < 4; i++)
-        result.data[i][i] = TO_FIXED(1.0f);
+        result.data[i][i] = float2fix(1.0f, FIXED_POINT_SHIFT);
     return result;
 }
 
@@ -22,15 +22,16 @@ Matrix4 Matrix4::identity()
 Matrix4 Matrix4::multiply(const Matrix4 &other) const
 {
     Matrix4 result;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; ++i)
     {
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 4; ++j)
         {
-            result.data[i][j] = 0;
-            for (int k = 0; k < 4; k++)
+            int sum = 0;
+            for (int k = 0; k < 4; ++k)
             {
-                result.data[i][j] += MULT_FIXED(data[i][k], other.data[k][j]);
+                sum += float2fix(fix2float(data[i][k], FIXED_POINT_SHIFT) * fix2float(other.data[k][j], FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
             }
+            result.data[i][j] = sum;
         }
     }
     return result;
@@ -40,16 +41,31 @@ Matrix4 Matrix4::multiply(const Matrix4 &other) const
 Vector3 Matrix4::multiply(const Vector3 &vec) const
 {
     Vector3 result;
-    result.x = MULT_FIXED(data[0][0], vec.x) + MULT_FIXED(data[0][1], vec.y) + MULT_FIXED(data[0][2], vec.z) + data[0][3];
-    result.y = MULT_FIXED(data[1][0], vec.x) + MULT_FIXED(data[1][1], vec.y) + MULT_FIXED(data[1][2], vec.z) + data[1][3];
-    result.z = MULT_FIXED(data[2][0], vec.x) + MULT_FIXED(data[2][1], vec.y) + MULT_FIXED(data[2][2], vec.z) + data[2][3];
+    result.x = float2fix(
+        (fix2float(data[0][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[0][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[0][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            fix2float(data[0][3], FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    result.y = float2fix(
+        (fix2float(data[1][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[1][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[1][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            fix2float(data[1][3], FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
+    result.z = float2fix(
+        (fix2float(data[2][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[2][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            (fix2float(data[2][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
+            fix2float(data[2][3], FIXED_POINT_SHIFT),
+        FIXED_POINT_SHIFT);
     return result;
 }
 
 // Функции трансформации (перевод в fixed-point)
 
 // Перемещение
-Matrix4 Matrix4::translation(int x, int y, int z)
+Matrix4 Matrix4::translation(int32_t x, int32_t y, int32_t z)
 {
     Matrix4 result = Matrix4::identity();
     result.data[0][3] = x;
@@ -59,7 +75,7 @@ Matrix4 Matrix4::translation(int x, int y, int z)
 }
 
 // Масштабирование
-Matrix4 Matrix4::scale(int sx, int sy, int sz)
+Matrix4 Matrix4::scale(int32_t sx, int32_t sy, int32_t sz)
 {
     Matrix4 result = Matrix4::identity();
     result.data[0][0] = sx;
@@ -69,11 +85,11 @@ Matrix4 Matrix4::scale(int sx, int sy, int sz)
 }
 
 // Поворот вокруг оси X
-Matrix4 Matrix4::rotationX(int angleFixed)
+Matrix4 Matrix4::rotationX(int32_t angleFixed)
 {
     Matrix4 result = Matrix4::identity();
-    int cosA = TO_FIXED(cosf(FROM_FIXED(angleFixed)));
-    int sinA = TO_FIXED(sinf(FROM_FIXED(angleFixed)));
+    int32_t cosA = float2fix(cosf(int2float(angleFixed)), FIXED_POINT_SHIFT);
+    int32_t sinA = float2fix(sinf(int2float(angleFixed)), FIXED_POINT_SHIFT);
     result.data[1][1] = cosA;
     result.data[1][2] = -sinA;
     result.data[2][1] = sinA;
@@ -82,11 +98,11 @@ Matrix4 Matrix4::rotationX(int angleFixed)
 }
 
 // Поворот вокруг оси Y
-Matrix4 Matrix4::rotationY(int angleFixed)
+Matrix4 Matrix4::rotationY(int32_t angleFixed)
 {
     Matrix4 result = Matrix4::identity();
-    int cosA = TO_FIXED(cosf(FROM_FIXED(angleFixed)));
-    int sinA = TO_FIXED(sinf(FROM_FIXED(angleFixed)));
+    int32_t cosA = float2fix(cosf(int2float(angleFixed)), FIXED_POINT_SHIFT);
+    int32_t sinA = float2fix(sinf(int2float(angleFixed)), FIXED_POINT_SHIFT);
     result.data[0][0] = cosA;
     result.data[0][2] = sinA;
     result.data[2][0] = -sinA;
@@ -95,11 +111,11 @@ Matrix4 Matrix4::rotationY(int angleFixed)
 }
 
 // Поворот вокруг оси Z
-Matrix4 Matrix4::rotationZ(int angleFixed)
+Matrix4 Matrix4::rotationZ(int32_t angleFixed)
 {
     Matrix4 result = Matrix4::identity();
-    int cosA = TO_FIXED(cosf(FROM_FIXED(angleFixed)));
-    int sinA = TO_FIXED(sinf(FROM_FIXED(angleFixed)));
+    int32_t cosA = float2fix(cosf(int2float(angleFixed)), FIXED_POINT_SHIFT);
+    int32_t sinA = float2fix(sinf(int2float(angleFixed)), FIXED_POINT_SHIFT);
     result.data[0][0] = cosA;
     result.data[0][1] = -sinA;
     result.data[1][0] = sinA;
@@ -121,17 +137,17 @@ Matrix4 Matrix4::transpose() const
     return result;
 }
 
-Matrix4 Matrix4::perspective(int fov, int aspectRatio, int near, int far)
+Matrix4 Matrix4::perspective(int32_t fov, int32_t aspectRatio, int32_t near, int32_t far)
 {
     Matrix4 result;
-    int tanHalfFOV = TO_FIXED(tanf(FROM_FIXED(fov) / 2.0f));
+    int32_t tanHalfFOV = float2fix(tanf(int2float(fov) / 2.0f), FIXED_POINT_SHIFT);
     int range = near - far;
 
-    result.data[0][0] = MULT_FIXED(TO_FIXED(1), aspectRatio) / tanHalfFOV;
-    result.data[1][1] = TO_FIXED(1) / tanHalfFOV;
+    result.data[0][0] = float2fix((int2float(1) * fix2float(aspectRatio, FIXED_POINT_SHIFT)) / fix2float(tanHalfFOV, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
+    result.data[1][1] = float2fix(int2float(1) / fix2float(tanHalfFOV, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
     result.data[2][2] = (near + far) / range;
-    result.data[2][3] = MULT_FIXED(TO_FIXED(2) * near * far, 1) / range;
-    result.data[3][2] = TO_FIXED(-1);
+    result.data[2][3] = float2fix((int2float(2) * int2float(near) * int2float(far) * 1) / int2float(range), FIXED_POINT_SHIFT);
+    result.data[3][2] = float2fix(int2float(-1), FIXED_POINT_SHIFT);
     result.data[3][3] = 0;
 
     return result;
@@ -148,7 +164,7 @@ Matrix4 Matrix4::operator*(const Matrix4 &other) const
             int sum = 0;
             for (int k = 0; k < 4; ++k)
             {
-                sum += MULT_FIXED(data[i][k], other.data[k][j]);
+                sum += float2fix(fix2float(data[i][k], FIXED_POINT_SHIFT) * fix2float(other.data[k][j], FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
             }
             result.data[i][j] = sum;
         }

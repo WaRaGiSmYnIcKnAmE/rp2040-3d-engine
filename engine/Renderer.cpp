@@ -20,7 +20,7 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
     // Матрицы для преобразования объекта в пространство камеры и затем в пространство экрана
     Matrix4 viewMatrix = Matrix4::rotationX(camera.rotation.x) * Matrix4::rotationY(camera.rotation.y) * Matrix4::rotationZ(camera.rotation.z);
     viewMatrix = viewMatrix * Matrix4::translation(-camera.position.x, -camera.position.y, -camera.position.z);
-    Matrix4 projectionMatrix = Matrix4::perspective(TO_FIXED(60), TO_FIXED(width) / height, TO_FIXED(1), TO_FIXED(100));
+    Matrix4 projectionMatrix = Matrix4::perspective(float2fix(60.0f, FIXED_POINT_SHIFT), float2fix(width / height, FIXED_POINT_SHIFT), float2fix(1.0f, FIXED_POINT_SHIFT), float2fix(60.0f, FIXED_POINT_SHIFT));
 
     // Проход по объектам сцены и рендер только видимых
     for (int i = 0; i < scene.objectCount; ++i)
@@ -77,6 +77,43 @@ Vector3 Renderer::projectVertex(const Vector3 &position, int width, int height, 
 // Алгоритм Брезенхэма для рисования линии
 void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1)
 {
+    float x0 = fix2float(v0.x, FIXED_POINT_SHIFT);
+    float y0 = fix2float(v0.y, FIXED_POINT_SHIFT);
+    float x1 = fix2float(v1.x, FIXED_POINT_SHIFT);
+    float y1 = fix2float(v0.y, FIXED_POINT_SHIFT);
+
+    float dx = abs(x1 - x0);
+    float dy = abs(y1 - y0);
+    float step_x = (x0 < x1) ? 1.0f : -1.0f;
+    float step_y = (y0 < y1) ? 1.0f : -1.0f;
+    float err = (dx > dy ? dx : -dy) / 2.0f, e2;
+
+    while (true)
+    {
+        if (x0 >= 0 && x0 < width && y0 >= 0 && y0 < height)
+        {
+            frameBuffer[float2int(y0) * height + float2int(x0)] = COLOR_OBJECT;
+        }
+
+        if (x0 == x1 && y0 == y1)
+            break;
+        e2 = err;
+        if (e2 > -dx)
+        {
+            err -= dy;
+            x0 += step_x;
+        }
+        if (e2 < dy)
+        {
+            err += dx;
+            y0 += step_y;
+        }
+    }
+}
+
+/*// Алгоритм Брезенхэма для рисования линии
+void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1)
+{
     int x0 = FROM_FIXED(v0.x);
     int y0 = FROM_FIXED(v0.y);
     int x1 = FROM_FIXED(v1.x);
@@ -110,3 +147,4 @@ void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0
         }
     }
 }
+*/

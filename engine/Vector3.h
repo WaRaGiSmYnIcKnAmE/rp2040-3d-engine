@@ -2,77 +2,81 @@
 #define VECTOR3_H
 
 #include "pico/stdlib.h"
-#include "FixedPoint.h"
+#include "pico/float.h"
 
-// Структура Vector3 для работы с 3D векторами с использованием fixed-point
+// Фиксированное значение масштаба (16 дробных бит)
+#define FIXED_POINT_SHIFT 16
+
+// struct для работы с 3D-векторами на базе fixed-point
 struct Vector3
 {
-    FixedPoint x, y, z;
+    int32_t x, y, z;
 
-    // Конструктор для любых значений с преобразованием в FixedPoint
-    Vector3(FixedPoint x, FixedPoint y, FixedPoint z) : x(x), y(y), z(z) {}
+    // Конструктор по умолчанию
+    Vector3() : x(0), y(0), z(0) {}
 
-    // Универсальный конструктор для int и float значений
-    template <typename T>
-    Vector3(T x, T y, T z) : x(FixedPoint(x)), y(FixedPoint(y)), z(FixedPoint(z)) {}
+    // Конструктор с параметрами int
+    Vector3(int32_t x, int32_t y, int32_t z) : x(x), y(y), z(z) {}
 
-    // Перегрузка оператора + для сложения
+    // Конструктор с параметрами float
+    Vector3(float fx, float fy, float fz)
+        : x(float2fix(fx, FIXED_POINT_SHIFT)),
+          y(float2fix(fy, FIXED_POINT_SHIFT)),
+          z(float2fix(fz, FIXED_POINT_SHIFT)) {}
+
+    // Перегрузка оператора + (сложение векторов)
     Vector3 operator+(const Vector3 &other) const
     {
-        return Vector3((x + other.x).getRawValue(), (y + other.y).getRawValue(), (z + other.z).getRawValue());
+        return Vector3(x + other.x, y + other.y, z + other.z);
     }
 
-    // Перегрузка оператора - для вычитания
+    // Перегрузка оператора - (вычитание векторов)
     Vector3 operator-(const Vector3 &other) const
     {
-        return Vector3((x - other.x).getRawValue(), (y - other.y).getRawValue(), (z - other.z).getRawValue());
+        return Vector3(x - other.x, y - other.y, z - other.z);
     }
 
     // Перегрузка оператора * для умножения на скаляр
-    Vector3 operator*(const FixedPoint &scalar) const
+    Vector3 operator*(int32_t scalar) const
     {
-        return Vector3((x * scalar).getRawValue(), (y * scalar).getRawValue(), (z * scalar).getRawValue());
+        return Vector3((x * scalar) >> FIXED_POINT_SHIFT,
+                       (y * scalar) >> FIXED_POINT_SHIFT,
+                       (z * scalar) >> FIXED_POINT_SHIFT);
     }
 
     // Перегрузка оператора *= для умножения на скаляр с присвоением
-    Vector3 &operator*=(const FixedPoint &scalar)
+    Vector3 &operator*=(int32_t scalar)
     {
-        x = x * scalar;
-        y = y * scalar;
-        z = z * scalar;
+        x = (x * scalar) >> FIXED_POINT_SHIFT;
+        y = (y * scalar) >> FIXED_POINT_SHIFT;
+        z = (z * scalar) >> FIXED_POINT_SHIFT;
         return *this;
+    }
+
+    // Преобразование в float для использования в выводе или дальнейших вычислениях
+    void toFloat(float &outX, float &outY, float &outZ) const
+    {
+        outX = fix2float(x, FIXED_POINT_SHIFT);
+        outY = fix2float(y, FIXED_POINT_SHIFT);
+        outZ = fix2float(z, FIXED_POINT_SHIFT);
     }
 };
 
-// Функция для сложения двух 3D векторов
-Vector3 addVectors(const Vector3 &vector1, const Vector3 &vector2)
-{
-    return vector1 + vector2;
-}
+// Пример дополнительных функций для операций над векторами
 
-// Функция для вычитания двух 3D векторов
-Vector3 subVectors(const Vector3 &vector1, const Vector3 &vector2)
-{
-    return vector1 - vector2;
-}
+// Сложение векторов
+Vector3 addVectors(const Vector3 &vector1, const Vector3 &vector2);
 
-// Функция для умножения 3D вектора на скаляр
-Vector3 multiplyVectorByScalar(const Vector3 &v, int scalar)
-{
-    return v * FixedPoint::fromInt(scalar);
-}
+// Вычитание векторов
+Vector3 subVectors(const Vector3 &vector1, const Vector3 &vector2);
 
-// Функция для нормализации 3D вектора (делает его единичным вектором)
-Vector3 normalizeVector(const Vector3 &vector)
-{
-    FixedPoint magnitude = FixedPoint::sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
-    return Vector3((vector.x / magnitude).getRawValue(), (vector.y / magnitude).getRawValue(), (vector.z / magnitude).getRawValue());
-}
+// Умножение на скаляр
+Vector3 multiplyVectorByScalar(const Vector3 &v, int32_t scalar);
 
-// Функция для вычисления скалярного произведения двух 3D векторов
-FixedPoint scalarProduct(const Vector3 &vector1, const Vector3 &vector2)
-{
-    return vector1.x * vector2.x + vector1.y * vector2.y + vector1.z * vector2.z;
-}
+// Нормализация вектора (делает его единичным вектором)
+Vector3 normalizeVector(const Vector3 &vector);
+
+// Скалярное произведение двух векторов
+int32_t scalarProduct(const Vector3 &vector1, const Vector3 &vector2);
 
 #endif // VECTOR3_H

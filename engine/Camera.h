@@ -14,7 +14,7 @@ public:
     int nearPlane;   // Ближняя плоскость отсечения
     int farPlane;    // Дальняя плоскость отсечения
 
-    Camera() : position(Vector3(TO_FIXED(0), TO_FIXED(0), TO_FIXED(0))), rotation(Vector3(TO_FIXED(0), TO_FIXED(0), TO_FIXED(0))), fieldOfView(TO_FIXED(90)), nearPlane(TO_FIXED(1)), farPlane(TO_FIXED(1000)) {}
+    Camera() : position(Vector3(0.0f, 0.0f, 0.0f)), rotation(Vector3(0.0f, 0.0f, 0.0f)), fieldOfView(float2fix(int2float(90), FIXED_POINT_SHIFT)), nearPlane(float2fix(int2float(1), FIXED_POINT_SHIFT)), farPlane(float2fix(int2float(1000), FIXED_POINT_SHIFT)) {}
 
     // Установка позиции и поворота камеры
     void setPosition(const Vector3 &pos)

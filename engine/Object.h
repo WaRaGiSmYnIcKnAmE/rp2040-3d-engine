@@ -4,6 +4,7 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 #include "Mesh.h"
+#include "pico/float.h"
 
 class Object
 {
@@ -14,7 +15,7 @@ public:
     Mesh *mesh;
     bool visible;
 
-    Object() : position(Vector3()), rotation(Vector3()), scale(TO_FIXED(1), TO_FIXED(1), TO_FIXED(1)), mesh(nullptr), visible(true) {}
+    Object() : position(Vector3()), rotation(Vector3()), scale(1.0f, 1.0f, 1.0f), mesh(nullptr), visible(true) {}
 
     void setPosition(const Vector3 &pos) { position = pos; }
     void setRotation(const Vector3 &rot) { rotation = rot; }

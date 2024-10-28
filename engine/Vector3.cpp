@@ -11,24 +11,34 @@ Vector3 subVectors(const Vector3 &vector1, const Vector3 &vector2)
     return Vector3(vector1.x - vector2.x, vector1.y - vector2.y, vector1.z - vector2.z);
 }
 
+// Функция для умножения 3D-вектора на скаляр, используя фиксированную точку
 Vector3 multiplyVectorByScalar(const Vector3 &v, int scalar)
 {
-    int fixedScalar = TO_FIXED(scalar);
-    return Vector3(MULT_FIXED(v.x, fixedScalar), MULT_FIXED(v.y, fixedScalar), MULT_FIXED(v.z, fixedScalar));
+    int32_t fixedScalar = float2fix(scalar, FIXED_POINT_SHIFT); // Преобразование в фиксированную точку
+    return Vector3(fix2float(v.x * fixedScalar, FIXED_POINT_SHIFT),
+                   fix2float(v.y * fixedScalar, FIXED_POINT_SHIFT),
+                   fix2float(v.z * fixedScalar, FIXED_POINT_SHIFT));
 }
 
+// Функция для нормализации 3D-вектора (преобразование в единичный вектор)
 Vector3 normalizeVector(const Vector3 &vector)
 {
-    int32_t magnitude = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
+    // Вычисляем величину (модуль) вектора и конвертируем в float
+    float magnitude = sqrtf(fix2float(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z, FIXED_POINT_SHIFT));
 
-    if (magnitude > 0)
+    if (magnitude > 0.0f)
     {
-        return multiplyVectorByScalar(vector, 1000 / magnitude);
+        // Вычисляем нормализованный вектор, деля каждый компонент на модуль
+        float invMagnitude = 1.0f / magnitude;
+        return Vector3(float2fix(fix2float(vector.x, FIXED_POINT_SHIFT) * invMagnitude, FIXED_POINT_SHIFT),
+                       float2fix(fix2float(vector.y, FIXED_POINT_SHIFT) * invMagnitude, FIXED_POINT_SHIFT),
+                       float2fix(fix2float(vector.z, FIXED_POINT_SHIFT) * invMagnitude, FIXED_POINT_SHIFT));
     }
-    return vector;
+    return vector; // Возвращаем исходный вектор, если величина равна 0
 }
 
-int scalarProduct(const Vector3 &vector1, const Vector3 &vector2)
+// Скалярное произведение двух векторов
+int32_t scalarProduct(const Vector3 &vector1, const Vector3 &vector2)
 {
-    return FROM_FIXED(MULT_FIXED(vector1.x, vector2.x) + MULT_FIXED(vector1.y, vector2.y) + MULT_FIXED(vector1.z, vector2.z));
+    return float2fix(fix2float(vector1.x, FIXED_POINT_SHIFT) * fix2float(vector2.x, FIXED_POINT_SHIFT) + fix2float(vector1.y, FIXED_POINT_SHIFT) * fix2float(vector2.y, FIXED_POINT_SHIFT) + fix2float(vector1.z, FIXED_POINT_SHIFT) * fix2float(vector2.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
 }
