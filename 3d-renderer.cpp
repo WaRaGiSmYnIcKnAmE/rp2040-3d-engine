@@ -24,19 +24,21 @@ void core1_render_task()
     cubeObject.mesh = &cubeMesh;
 
     cubeObject.setPosition(Vector3(40, 40, 10));
-    cubeObject.setRotation(Vector3(30, 30, 30));
+    cubeObject.setRotation(Vector3(90, 90, 90));
 
     // Инициализируем сцену и добавляем объект на сцену
     Scene scene;
     scene.addObject(&cubeObject);
 
-    Matrix4 trMa = cubeObject.getTransformationMatrix();
+    Matrix4 trMa = Matrix4::translation(20, 20, 20);
 
-    ili9341_draw_text(Vector2(5, 5), 2, "{%d, %d, %d, %d}\n{%d, %d, %d, %d}\n{%d, %d, %d, %d}\n{%d, %d, %d, %d}",
+    ili9341_draw_text(Vector2(5, 5), 2, "%f", FROM_FIXED(1));
+
+    /*ili9341_draw_text(Vector2(5, 5), 2, "{%d, %d, %d, %d}\n{%d, %d, %d, %d}\n{%d, %d, %d, %d}\n{%d, %d, %d, %d}",
                       trMa.data[0][0], trMa.data[0][1], trMa.data[0][2], trMa.data[0][3],
                       trMa.data[1][0], trMa.data[1][1], trMa.data[1][2], trMa.data[1][3],
                       trMa.data[2][0], trMa.data[2][1], trMa.data[2][2], trMa.data[2][3],
-                      trMa.data[3][0], trMa.data[3][1], trMa.data[3][2], trMa.data[3][3]);
+                      trMa.data[3][0], trMa.data[3][1], trMa.data[3][2], FROM_FIXED(trMa.data[3][3]));*/
 
     while (true)
     {

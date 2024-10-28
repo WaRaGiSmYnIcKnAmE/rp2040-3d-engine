@@ -6,9 +6,9 @@
 
 // Fixed-point настройки
 #define FIXED_POINT_SHIFT 16
-#define TO_FIXED(x) ((int)((x) * (1 << FIXED_POINT_SHIFT)))   // float -> fixed-point
-#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT)) // fixed-point -> float
-#define MULT_FIXED(a, b) (((a) * (b)) >> FIXED_POINT_SHIFT)   // Умножение fixed-point
+#define TO_FIXED(x) (((x) >= 0) ? ((int)((x) * (1 << FIXED_POINT_SHIFT))) : ((int)((x) * (1 << FIXED_POINT_SHIFT)))) // float -> fixed-point
+#define FROM_FIXED(x) ((float)(x) / (1 << FIXED_POINT_SHIFT))                                                        // fixed-point -> float
+#define MULT_FIXED(a, b) (((long long)(a) * (long long)(b)) >> FIXED_POINT_SHIFT)                                    // Умножение fixed-point
 
 struct Matrix4
 {

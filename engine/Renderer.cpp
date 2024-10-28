@@ -92,7 +92,7 @@ void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0
     {
         if (x0 >= 0 && x0 < width && y0 >= 0 && y0 < height)
         {
-            frameBuffer[(y0 + (width / 2)) * height + (x0 + (height / 2))] = COLOR_OBJECT;
+            frameBuffer[y0 * height + x0] = COLOR_OBJECT;
         }
 
         if (x0 == x1 && y0 == y1)

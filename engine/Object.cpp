@@ -9,5 +9,5 @@ Matrix4 Object::getTransformationMatrix() const
                              Matrix4::rotationZ(TO_FIXED(rotation.z));
     Matrix4 scaleMatrix = Matrix4::scale(scale.x, scale.y, scale.z);
 
-    return translationMatrix * rotationMatrix * scaleMatrix;
+    return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix);
 }
