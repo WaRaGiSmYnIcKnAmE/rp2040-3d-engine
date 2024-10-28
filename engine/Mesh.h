@@ -35,8 +35,6 @@ public:
 
     // Статические методы для генерации примитивов
     static Mesh createCube(int size);
-    static Mesh createSphere(int radius, int segments);
-    static Mesh createPyramid(int baseSize, int height);
 
     std::vector<Vertex> vertices; // Массив вершин меша
     std::vector<int> indices;     // Индексация для треугольников и других примитивов

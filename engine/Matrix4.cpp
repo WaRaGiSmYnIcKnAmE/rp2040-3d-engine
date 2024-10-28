@@ -1,6 +1,8 @@
 #include "Matrix4.h"
 #include "pico/float.h"
 
+#define PI 3.14159265358979323846
+
 // Конструктор по умолчанию: все элементы матрицы равны нулю
 Matrix4::Matrix4()
 {
@@ -62,7 +64,12 @@ Vector3 Matrix4::multiply(const Vector3 &vec) const
     return result;
 }
 
-// Перемещение
+/*
+|  1  0  0  x  |
+|  0  1  0  y  |
+|  0  0  1  z  |
+|  0  0  0  1  |
+*/
 Matrix4 Matrix4::translation(int32_t x, int32_t y, int32_t z)
 {
     Matrix4 result = Matrix4::identity();
@@ -72,7 +79,12 @@ Matrix4 Matrix4::translation(int32_t x, int32_t y, int32_t z)
     return result;
 }
 
-// Масштабирование
+/*
+|  x  0  0  0  |
+|  0  y  0  0  |
+|  0  0  z  0  |
+|  0  0  0  1  |
+*/
 Matrix4 Matrix4::scale(int32_t sx, int32_t sy, int32_t sz)
 {
     Matrix4 result = Matrix4::identity();
@@ -82,43 +94,85 @@ Matrix4 Matrix4::scale(int32_t sx, int32_t sy, int32_t sz)
     return result;
 }
 
-// Поворот вокруг оси X
+/*
+|  1   0   0   0  |
+|  0  cos -sin 0  |
+|  0  sin cos  0  |
+|  0   0   0   1  |
+*/
 Matrix4 Matrix4::rotationX(int32_t angleFixed)
 {
-    Matrix4 result = Matrix4::identity();
-    int32_t cosA = float2fix(cosf(int2float(angleFixed)), FIXED_POINT_SHIFT);
-    int32_t sinA = float2fix(sinf(int2float(angleFixed)), FIXED_POINT_SHIFT);
-    result.data[1][1] = cosA;
-    result.data[1][2] = -sinA;
-    result.data[2][1] = sinA;
-    result.data[2][2] = cosA;
-    return result;
+    Matrix4 matrix = Matrix4::identity();
+
+    float angle = fix2float(angleFixed, FIXED_POINT_SHIFT);
+    float radians = (angle * PI) / 180;
+
+    float cos_angle = cosf(radians);
+    float sin_angle = sinf(radians);
+
+    int32_t cos_fixed = float2fix(cos_angle, FIXED_POINT_SHIFT);
+    int32_t sin_fixed = float2fix(sin_angle, FIXED_POINT_SHIFT);
+
+    matrix.data[1][1] = cos_fixed;
+    matrix.data[1][2] = -sin_fixed;
+    matrix.data[2][1] = sin_fixed;
+    matrix.data[2][2] = cos_fixed;
+
+    return matrix;
 }
 
-// Поворот вокруг оси Y
+/*
+| cos  0  sin  0  |
+|  0   1   0   0  |
+| -sin 0  cos  0  |
+|  0   0   0   1  |
+*/
 Matrix4 Matrix4::rotationY(int32_t angleFixed)
 {
-    Matrix4 result = Matrix4::identity();
-    int32_t cosA = float2fix(cosf(int2float(angleFixed)), FIXED_POINT_SHIFT);
-    int32_t sinA = float2fix(sinf(int2float(angleFixed)), FIXED_POINT_SHIFT);
-    result.data[0][0] = cosA;
-    result.data[0][2] = sinA;
-    result.data[2][0] = -sinA;
-    result.data[2][2] = cosA;
-    return result;
+    Matrix4 matrix = Matrix4::identity();
+
+    float angle = fix2float(angleFixed, FIXED_POINT_SHIFT);
+    float radians = (angle * PI) / 180;
+
+    float cos_angle = cosf(radians);
+    float sin_angle = sinf(radians);
+
+    int32_t cos_fixed = float2fix(cos_angle, FIXED_POINT_SHIFT);
+    int32_t sin_fixed = float2fix(sin_angle, FIXED_POINT_SHIFT);
+
+    matrix.data[0][0] = cos_fixed;
+    matrix.data[0][2] = sin_angle;
+    matrix.data[2][0] = -sin_angle;
+    matrix.data[2][2] = cos_fixed;
+
+    return matrix;
 }
 
-// Поворот вокруг оси Z
+/*
+| cos -sin 0   0  |
+| sin cos  0   0  |
+|  0   0   1   0  |
+|  0   0   0   1  |
+*/
 Matrix4 Matrix4::rotationZ(int32_t angleFixed)
 {
-    Matrix4 result = Matrix4::identity();
-    int32_t cosA = float2fix(cosf(int2float(angleFixed)), FIXED_POINT_SHIFT);
-    int32_t sinA = float2fix(sinf(int2float(angleFixed)), FIXED_POINT_SHIFT);
-    result.data[0][0] = cosA;
-    result.data[0][1] = -sinA;
-    result.data[1][0] = sinA;
-    result.data[1][1] = cosA;
-    return result;
+    Matrix4 matrix = Matrix4::identity();
+
+    float angle = fix2float(angleFixed, FIXED_POINT_SHIFT);
+    float radians = (angle * PI) / 180;
+
+    float cos_angle = cosf(radians);
+    float sin_angle = sinf(radians);
+
+    int32_t cos_fixed = float2fix(cos_angle, FIXED_POINT_SHIFT);
+    int32_t sin_fixed = float2fix(sin_angle, FIXED_POINT_SHIFT);
+
+    matrix.data[0][0] = cos_fixed;
+    matrix.data[0][1] = -sin_fixed;
+    matrix.data[1][0] = sin_fixed;
+    matrix.data[1][1] = cos_fixed;
+
+    return matrix;
 }
 
 // Транспонирование матрицы
