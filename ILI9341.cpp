@@ -48,8 +48,7 @@ void ili9341_init()
     gpio_init(ILI9341_RST_PIN);
     gpio_set_dir(ILI9341_RST_PIN, GPIO_OUT);
 
-    // Инициализация SPI
-    spi_init(SPI_PORT, 100000 * 1000);
+    spi_init(SPI_PORT, 500000 * 1000);
     gpio_set_function(ILI9341_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(ILI9341_MOSI_PIN, GPIO_FUNC_SPI);
 

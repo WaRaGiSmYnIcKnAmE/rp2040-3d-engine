@@ -14,30 +14,31 @@ Matrix4 Object::getTransformationMatrix() const
 
 Matrix4 Object::getViewMatrix(const Vector3 &cameraPosition, const Vector3 &target, const Vector3 &up)
 {
-    Vector3 zAxis = normalizeVector(cameraPosition - target);
-    Vector3 xAxis = normalizeVector(crossVectors(up, zAxis));
-    Vector3 yAxis = crossVectors(zAxis, xAxis);
+    Vector3 zAxis = cameraPosition - target;
+    Vector3 normZ = normalizeVector(zAxis);
+    Vector3 xAxis = normalizeVector(up * zAxis);
+    Vector3 yAxis = zAxis * xAxis;
 
     Matrix4 viewMatrix;
     // Заполняем элементы матрицы построчно
     viewMatrix.data[0][0] = xAxis.x;
     viewMatrix.data[0][1] = yAxis.x;
-    viewMatrix.data[0][2] = zAxis.x;
+    viewMatrix.data[0][2] = normZ.x;
     viewMatrix.data[0][3] = float2fix(0.0f, FIXED_POINT_SHIFT);
 
     viewMatrix.data[1][0] = xAxis.y;
     viewMatrix.data[1][1] = yAxis.y;
-    viewMatrix.data[1][2] = zAxis.y;
+    viewMatrix.data[1][2] = normZ.y;
     viewMatrix.data[1][3] = float2fix(0.0f, FIXED_POINT_SHIFT);
 
     viewMatrix.data[2][0] = xAxis.z;
     viewMatrix.data[2][1] = yAxis.z;
-    viewMatrix.data[2][2] = zAxis.z;
+    viewMatrix.data[2][2] = normZ.z;
     viewMatrix.data[2][3] = float2fix(1.0f, FIXED_POINT_SHIFT);
 
-    viewMatrix.data[3][0] = -xAxis.dot(cameraPosition);
-    viewMatrix.data[3][1] = -yAxis.dot(cameraPosition);
-    viewMatrix.data[3][2] = -zAxis.dot(cameraPosition);
+    viewMatrix.data[3][0] = scalarProduct(-xAxis, cameraPosition);
+    viewMatrix.data[3][1] = scalarProduct(-yAxis, cameraPosition);
+    viewMatrix.data[3][2] = scalarProduct(-zAxis, cameraPosition);
     viewMatrix.data[3][3] = float2fix(1.0f, FIXED_POINT_SHIFT);
     return viewMatrix;
 }
@@ -70,34 +71,4 @@ Matrix4 Object::getProjectionMatrix(float fov, float aspectRatio, float nearPlan
     projectionMatrix.data[3][3] = 0;
 
     return projectionMatrix;
-}
-
-// Применяет матрицу MVP к вертексу с использованием fixed-point арифметики
-Vector3 Object::applyMVP(const Matrix4 &MVP, const Vector3 &vertex)
-{
-    int32_t w = float2fix(1.0f, FIXED_POINT_SHIFT); // единица в формате fixed-point для w
-
-    // Умножение матрицы на вектор
-    int32_t x = float2fix(
-        fix2float(MVP.data[0][0] * vertex.x + MVP.data[0][1] * vertex.y + MVP.data[0][2] * vertex.z + MVP.data[0][3] * w, FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    int32_t y = float2fix(
-        fix2float(MVP.data[1][0] * vertex.x + MVP.data[1][1] * vertex.y + MVP.data[1][2] * vertex.z + MVP.data[1][3] * w, FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    int32_t z = float2fix(
-        fix2float(MVP.data[2][0] * vertex.x + MVP.data[2][1] * vertex.y + MVP.data[2][2] * vertex.z + MVP.data[2][3] * w, FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    int32_t wOut = float2fix(
-        fix2float(MVP.data[3][0] * vertex.x + MVP.data[3][1] * vertex.y + MVP.data[3][2] * vertex.z + MVP.data[3][3] * w, FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-
-    // Нормализация координат (если используется перспектива)
-    if (wOut != 0)
-    {
-        x = float2fix(fix2float(x, FIXED_POINT_SHIFT) / fix2float(wOut, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
-        y = float2fix(fix2float(y, FIXED_POINT_SHIFT) / fix2float(wOut, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
-        z = float2fix(fix2float(z, FIXED_POINT_SHIFT) / fix2float(wOut, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT);
-    }
-
-    return Vector3(x, y, z);
 }

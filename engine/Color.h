@@ -34,7 +34,7 @@ public:
     // Функция для корректировки значений цвета в диапазоне [0, 255] и альфа [0, 1]
     void clamp();
 
-    uint16_t color565(uint8_t red, uint8_t green, uint8_t blue);
+    static uint16_t color565(uint8_t red, uint8_t green, uint8_t blue);
 };
 
 #endif // COLOR_H

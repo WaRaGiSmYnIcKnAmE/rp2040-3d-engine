@@ -21,10 +21,10 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
         Object *obj = scene.objects[i];
 
         Matrix4 modelMatrix = obj->getTransformationMatrix();
-        Matrix4 viewMatrix = obj->getViewMatrix({4.0f, 4.0f, 2.0f}, {0.0f, 0.0f, 10.0f}, {0.0f, 10.0f, 0.0f});
+        Matrix4 viewMatrix = obj->getViewMatrix({0.0f, 0.0f, 0.0f}, {120.0f, 160.0f, 5.0f}, {0.0f, 1.0f, 0.0f});
         Matrix4 projectionMatrix = obj->getProjectionMatrix(90.0f, width / height, 0.1f, 50.0f);
 
-        Matrix4 MVPMatrix = /*projectionMatrix * viewMatrix * */ modelMatrix;
+        Matrix4 MVPMatrix = modelMatrix;
 
         for (size_t j = 0; j < obj->mesh->indices.size(); j += 3)
         {
@@ -36,9 +36,9 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
             Vector3 vector1 = MVPMatrix * v1.position;
             Vector3 vector2 = MVPMatrix * v2.position;
 
-            drawLine(frameBuffer, width, height, vector0, vector1);
-            drawLine(frameBuffer, width, height, vector1, vector2);
-            drawLine(frameBuffer, width, height, vector2, vector0);
+            drawLine(frameBuffer, height, width, vector0, vector1);
+            drawLine(frameBuffer, height, width, vector1, vector2);
+            drawLine(frameBuffer, height, width, vector2, vector0);
         }
     }
 }
@@ -61,7 +61,7 @@ void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0
     {
         if (x0 >= 0 && x0 < width && y0 >= 0 && y0 < height)
         {
-            frameBuffer[y0 * height + x0] = COLOR_OBJECT;
+            frameBuffer[y0 * width + x0] = Color::color565(0, 255, 0);
         }
 
         if (x0 == x1 && y0 == y1)

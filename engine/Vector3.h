@@ -11,44 +11,58 @@ struct Vector3
 {
     int32_t x, y, z;
 
-    // Конструктор по умолчанию
     Vector3() : x(0), y(0), z(0) {}
 
-    // Конструктор с параметрами int
     Vector3(int32_t x, int32_t y, int32_t z) : x(x), y(y), z(z) {}
 
-    // Конструктор с параметрами float
     Vector3(float fx, float fy, float fz)
         : x(float2fix(fx, FIXED_POINT_SHIFT)),
           y(float2fix(fy, FIXED_POINT_SHIFT)),
           z(float2fix(fz, FIXED_POINT_SHIFT)) {}
 
-    // Перегрузка оператора + (сложение векторов)
+    Vector3 operator-() const
+    {
+        return Vector3(-x, -y, -z);
+    }
+
     Vector3 operator+(const Vector3 &other) const
     {
         return Vector3(x + other.x, y + other.y, z + other.z);
     }
 
-    // Перегрузка оператора - (вычитание векторов)
     Vector3 operator-(const Vector3 &other) const
     {
         return Vector3(x - other.x, y - other.y, z - other.z);
     }
 
-    // Перегрузка оператора * для умножения на скаляр
-    Vector3 operator*(int32_t scalar) const
+    Vector3 operator*(const int32_t scalar) const
     {
-        return Vector3((x * scalar) >> FIXED_POINT_SHIFT,
-                       (y * scalar) >> FIXED_POINT_SHIFT,
-                       (z * scalar) >> FIXED_POINT_SHIFT);
+        return Vector3((x * scalar),
+                       (y * scalar),
+                       (z * scalar));
     }
 
-    // Перегрузка оператора *= для умножения на скаляр с присвоением
     Vector3 &operator*=(int32_t scalar)
     {
-        x = (x * scalar) >> FIXED_POINT_SHIFT;
-        y = (y * scalar) >> FIXED_POINT_SHIFT;
-        z = (z * scalar) >> FIXED_POINT_SHIFT;
+        x = (x * scalar);
+        y = (y * scalar);
+        z = (z * scalar);
+        return *this;
+    }
+
+    Vector3 operator*(const Vector3 vector) const
+    {
+        return Vector3(
+            ((y * vector.z) - (z * vector.y)),
+            -((x * vector.z) - (z * vector.x)),
+            ((x * vector.y) - (y * vector.x)));
+    }
+
+    Vector3 &operator*=(Vector3 vector)
+    {
+        x = ((y * vector.z) - (z * vector.y));
+        y = ((z * vector.x) - (x * vector.z));
+        z = ((x * vector.y) - (y * vector.x));
         return *this;
     }
 
@@ -63,9 +77,9 @@ struct Vector3
     // Dot product
     int32_t dot(const Vector3 &other) const
     {
-        return ((x * other.x) >> FIXED_POINT_SHIFT) +
-               ((y * other.y) >> FIXED_POINT_SHIFT) +
-               ((z * other.z) >> FIXED_POINT_SHIFT);
+        return ((x * other.x)) +
+               ((y * other.y)) +
+               ((z * other.z));
     }
 };
 
@@ -85,8 +99,5 @@ Vector3 normalizeVector(const Vector3 &vector);
 
 // Скалярное произведение двух векторов
 int32_t scalarProduct(const Vector3 &vector1, const Vector3 &vector2);
-
-// Cross product
-Vector3 crossVectors(const Vector3 &vector1, const Vector3 &vector2);
 
 #endif // VECTOR3_H

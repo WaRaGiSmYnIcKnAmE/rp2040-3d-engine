@@ -59,6 +59,7 @@ target_link_libraries(3d-renderer
         pico_stdlib
         hardware_spi
         hardware_dma
+        hardware_clocks
         pico_multicore
         pico_platform
         pico_printf)
