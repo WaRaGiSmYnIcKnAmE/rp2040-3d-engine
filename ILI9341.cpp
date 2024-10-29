@@ -167,18 +167,15 @@ void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, .
     while (*text)
     {
         if (*text == '\n')
-        {                      // Проверка на символ новой строки
-            x += 8 * fontSize; // Увеличиваем y для переноса строки (высота шрифта)
-            y = position.x;    // Сброс x на начальную позицию
+        {
+            x += 8 * fontSize;
+            y = position.y;
         }
         else
         {
             ili9341_render_char(x, y, *text, fontSize);
-            y += 6 * fontSize; // Переход к следующему символу
+            y += 6 * fontSize;
         }
-
-        /*ili9341_render_char(y, x, *text, fontSize);
-        x += 6 * fontSize;*/
 
         text++;
     }

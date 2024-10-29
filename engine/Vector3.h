@@ -3,7 +3,6 @@
 
 #include "pico/stdlib.h"
 #include "pico/float.h"
-#include "pico/double.h"
 
 #define FIXED_POINT_SHIFT 16
 

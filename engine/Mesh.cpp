@@ -63,16 +63,16 @@ Mesh Mesh::createCube(int sideLength)
 {
     Mesh cube;
     float halfSide = sideLength / 2;
+
     cube.vertices = {
-        // Вершины куба (8 вершин)
-        Vertex({-halfSide, -halfSide, -halfSide}, {0, 0}),
-        Vertex({halfSide, -halfSide, -halfSide}, {0, 0}),
-        Vertex({halfSide, halfSide, -halfSide}, {0, 0}),
-        Vertex({-halfSide, halfSide, -halfSide}, {0, 0}),
-        Vertex({-halfSide, -halfSide, halfSide}, {0, 0}),
-        Vertex({halfSide, -halfSide, halfSide}, {0, 0}),
-        Vertex({halfSide, halfSide, halfSide}, {0, 0}),
-        Vertex({-halfSide, halfSide, halfSide}, {0, 0})};
+        Vertex({-10.0f, -10.0f, -10.0f}, {0, 0}),
+        Vertex({10.0f, -10.0f, -10.0f}, {0, 0}),
+        Vertex({10.0f, 10.0f, -10.0f}, {0, 0}),
+        Vertex({-10.0f, 10.0f, -10.0f}, {0, 0}),
+        Vertex({-10.0f, -10.0f, 10.0f}, {0, 0}),
+        Vertex({10.0f, -10.0f, 10.0f}, {0, 0}),
+        Vertex({10.0f, 10.0f, 10.0f}, {0, 0}),
+        Vertex({-10.0f, 10.0f, 10.0f}, {0, 0})};
 
     cube.indices = {
         0, 1, 2, 2, 3, 0, // Задняя грань

@@ -43,24 +43,9 @@ Matrix4 Matrix4::multiply(const Matrix4 &other) const
 Vector3 Matrix4::multiply(const Vector3 &vec) const
 {
     Vector3 result;
-    result.x = float2fix(
-        (fix2float(data[0][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[0][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[0][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            fix2float(data[0][3], FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    result.y = float2fix(
-        (fix2float(data[1][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[1][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[1][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            fix2float(data[1][3], FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    result.z = float2fix(
-        (fix2float(data[2][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[2][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[2][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            fix2float(data[2][3], FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
+    result.x = data[0][0] * vec.x + data[0][1] * vec.y + data[0][2] * vec.z + data[0][3] * float2fix(1.0f, FIXED_POINT_SHIFT);
+    result.y = data[1][0] * vec.x + data[1][1] * vec.y + data[1][2] * vec.z + data[1][3] * float2fix(1.0f, FIXED_POINT_SHIFT);
+    result.z = data[2][0] * vec.x + data[2][1] * vec.y + data[2][2] * vec.z + data[2][3] * float2fix(1.0f, FIXED_POINT_SHIFT);
     return result;
 }
 
@@ -141,8 +126,8 @@ Matrix4 Matrix4::rotationY(int32_t angleFixed)
     int32_t sin_fixed = float2fix(sin_angle, FIXED_POINT_SHIFT);
 
     matrix.data[0][0] = cos_fixed;
-    matrix.data[0][2] = sin_angle;
-    matrix.data[2][0] = -sin_angle;
+    matrix.data[0][2] = sin_fixed;
+    matrix.data[2][0] = -sin_fixed;
     matrix.data[2][2] = cos_fixed;
 
     return matrix;
@@ -224,34 +209,21 @@ Matrix4 Matrix4::operator*(const Matrix4 &other) const
     return result;
 }
 
-// Перегрузка оператора * для умножения матрицы на вектор
-Vector3 Matrix4::operator*(const Vector3 &vec) const
-{
-    Vector3 result;
-    result.x = float2fix(
-        (fix2float(data[0][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[0][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[0][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            fix2float(data[0][3], FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    result.y = float2fix(
-        (fix2float(data[1][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[1][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[1][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            fix2float(data[1][3], FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    result.z = float2fix(
-        (fix2float(data[2][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[2][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            (fix2float(data[2][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT), FIXED_POINT_SHIFT) +
-            fix2float(data[2][3], FIXED_POINT_SHIFT),
-        FIXED_POINT_SHIFT);
-    return result;
-}
-
 // Перегрузка оператора *= для умножения матриц и присвоения
 Matrix4 &Matrix4::operator*=(const Matrix4 &other)
 {
     *this = *this * other;
     return *this;
+}
+
+// Перегрузка оператора * для умножения матрицы на вектор
+Vector3 Matrix4::operator*(const Vector3 &vec) const
+{
+    Vector3 result;
+
+    result.x = float2fix(fix2float(data[0][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT) + fix2float(data[0][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT) + fix2float(data[0][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT) + fix2float(data[0][3], FIXED_POINT_SHIFT) * 1.0f, FIXED_POINT_SHIFT);
+    result.y = float2fix(fix2float(data[1][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT) + fix2float(data[1][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT) + fix2float(data[1][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT) + fix2float(data[1][3], FIXED_POINT_SHIFT) * 1.0f, FIXED_POINT_SHIFT);
+    result.z = float2fix(fix2float(data[2][0], FIXED_POINT_SHIFT) * fix2float(vec.x, FIXED_POINT_SHIFT) + fix2float(data[2][1], FIXED_POINT_SHIFT) * fix2float(vec.y, FIXED_POINT_SHIFT) + fix2float(data[2][2], FIXED_POINT_SHIFT) * fix2float(vec.z, FIXED_POINT_SHIFT) + fix2float(data[2][3], FIXED_POINT_SHIFT) * 1.0f, FIXED_POINT_SHIFT);
+
+    return result;
 }

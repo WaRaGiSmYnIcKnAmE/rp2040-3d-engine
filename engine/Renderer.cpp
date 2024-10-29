@@ -22,9 +22,9 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
 
         Matrix4 modelMatrix = obj->getTransformationMatrix();
         Matrix4 viewMatrix = obj->getViewMatrix({4.0f, 4.0f, 2.0f}, {0.0f, 0.0f, 10.0f}, {0.0f, 10.0f, 0.0f});
-        Matrix4 projectionMatrix = obj->getProjectionMatrix(90.0f, width / height, 0.1f, 100.0f);
+        Matrix4 projectionMatrix = obj->getProjectionMatrix(90.0f, width / height, 0.1f, 50.0f);
 
-        Matrix4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
+        Matrix4 MVPMatrix = /*projectionMatrix * viewMatrix * */ modelMatrix;
 
         for (size_t j = 0; j < obj->mesh->indices.size(); j += 3)
         {
@@ -32,9 +32,9 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
             Vertex v1 = obj->mesh->vertices[obj->mesh->indices[j + 1]];
             Vertex v2 = obj->mesh->vertices[obj->mesh->indices[j + 2]];
 
-            Vector3 vector0 = obj->applyMVP(MVPMatrix, v0.position);
-            Vector3 vector1 = obj->applyMVP(MVPMatrix, v1.position);
-            Vector3 vector2 = obj->applyMVP(MVPMatrix, v2.position);
+            Vector3 vector0 = MVPMatrix * v0.position;
+            Vector3 vector1 = MVPMatrix * v1.position;
+            Vector3 vector2 = MVPMatrix * v2.position;
 
             drawLine(frameBuffer, width, height, vector0, vector1);
             drawLine(frameBuffer, width, height, vector1, vector2);
