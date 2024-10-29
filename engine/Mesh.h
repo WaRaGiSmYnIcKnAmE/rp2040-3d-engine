@@ -29,7 +29,11 @@ public:
 
     Color getColor() const;
 
+    static Mesh createPlane(float width, float depth);
     static Mesh createCube(int size);
+    static Mesh createSphere(float radius, int sectors);
+    static Mesh createPyramid(float baseLength, float height);
+    static Mesh createCone(float radius, float height, int sectors);
 
     std::vector<Vertex> vertices;
     std::vector<int> indices;

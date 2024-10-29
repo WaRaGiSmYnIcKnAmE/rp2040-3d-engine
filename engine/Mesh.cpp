@@ -58,6 +58,28 @@ Color Mesh::getColor() const
     return color;
 }
 
+Mesh Mesh::createPlane(float width, float depth)
+{
+    Mesh plane;
+
+    // Вершины
+    float halfWidth = width / 2;
+    float halfDepth = depth / 2;
+    plane.vertices = {
+        Vertex({-halfWidth, 0, -halfDepth}, {0, 0}),
+        Vertex({halfWidth, 0, -halfDepth}, {0, 0}),
+        Vertex({halfWidth, 0, halfDepth}, {0, 0}),
+        Vertex({-halfWidth, 0, halfDepth}, {0, 0}),
+    };
+
+    // Индексы
+    plane.indices = {
+        0, 1, 2,
+        0, 2, 3};
+
+    return plane;
+}
+
 // Создание куба
 Mesh Mesh::createCube(int sideLength)
 {
@@ -84,4 +106,101 @@ Mesh Mesh::createCube(int sideLength)
     };
 
     return cube;
+}
+
+Mesh Mesh::createSphere(float radius, int sectors)
+{
+    Mesh sphere;
+
+    float phiStep = M_PI / sectors;       // Угол по широте
+    float thetaStep = 2 * M_PI / sectors; // Угол по долготе
+
+    for (int i = 0; i <= sectors; ++i)
+    {
+        for (int j = 0; j <= sectors; ++j)
+        {
+            float phi = i * phiStep;     // Угол по широте
+            float theta = j * thetaStep; // Угол по долготе
+
+            // Вычисление координат вершины
+            float x = radius * sinf(phi) * cosf(theta);
+            float y = radius * cosf(phi);
+            float z = radius * sinf(phi) * sinf(theta);
+
+            sphere.vertices.push_back(Vertex({x, y, z}, {0, 0}));
+        }
+    }
+
+    for (int i = 0; i < sectors; ++i)
+    {
+        for (int j = 0; j < sectors; ++j)
+        {
+            int first = i * (sectors + 1) + j;
+            int second = first + sectors + 1;
+
+            // Формирование индексов треугольников
+            sphere.indices.push_back(first);
+            sphere.indices.push_back(second);
+            sphere.indices.push_back(first + 1);
+
+            sphere.indices.push_back(second);
+            sphere.indices.push_back(second + 1);
+            sphere.indices.push_back(first + 1);
+        }
+    }
+
+    return sphere;
+}
+
+Mesh Mesh::createPyramid(float baseLength, float height)
+{
+    Mesh pyramid;
+
+    // Вершины
+    float halfBase = baseLength / 2;
+    pyramid.vertices = {
+        Vertex({0, height, 0}, {0, 0}),            // Вершина
+        Vertex({-halfBase, 0, -halfBase}, {0, 0}), // Задний левый угол
+        Vertex({halfBase, 0, -halfBase}, {0, 0}),  // Задний правый угол
+        Vertex({halfBase, 0, halfBase}, {0, 0}),   // Передний правый угол
+        Vertex({-halfBase, 0, halfBase}, {0, 0})   // Передний левый угол
+    };
+
+    // Индексы
+    pyramid.indices = {
+        0, 1, 2,         // Задняя грань
+        0, 2, 3,         // Правая грань
+        0, 3, 4,         // Передняя грань
+        0, 4, 1,         // Левая грань
+        1, 2, 3, 3, 4, 1 // Основание
+    };
+
+    return pyramid;
+}
+
+Mesh Mesh::createCone(float radius, float height, int sectors)
+{
+    Mesh cone;
+
+    // Вершина конуса
+    cone.vertices.push_back(Vertex({0, height, 0}, {0, 0}));
+
+    // Вершины основания
+    for (int i = 0; i <= sectors; ++i)
+    {
+        float theta = i * 2 * M_PI / sectors;
+        float x = radius * cosf(theta);
+        float z = radius * sinf(theta);
+        cone.vertices.push_back(Vertex({x, 0, z}, {0, 0}));
+    }
+
+    // Индексы
+    for (int i = 1; i <= sectors; ++i)
+    {
+        cone.indices.push_back(0);               // Вершина
+        cone.indices.push_back(i);               // Текущая вершина
+        cone.indices.push_back(i % sectors + 1); // Следующая вершина
+    }
+
+    return cone;
 }
