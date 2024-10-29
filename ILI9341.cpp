@@ -147,7 +147,7 @@ void ili9341_send_data_dma(uint8_t *data, size_t length)
 // Простейшая функция для вывода текста на дисплей
 void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, ...)
 {
-    char buffer[256]; // Буфер для форматированной строки
+    char buffer[512]; // Буфер для форматированной строки
 
     // Инициализация переменных аргументов
     va_list args;

@@ -16,15 +16,21 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
         frameBuffer[i] = COLOR_BACKGROUND;
     }
 
+    float yaw = camera.rotation.y;
+    float pitch = camera.rotation.x;
+    float roll = camera.rotation.z;
+
+    Vector3 targerVector = camera.position + Vector3(cosf(pitch) * sinf(yaw), sinf(pitch), cosf(pitch) * cos(yaw));
+
     for (int i = 0; i < scene.objectCount; ++i)
     {
         Object *obj = scene.objects[i];
 
         Matrix4 modelMatrix = obj->getTransformationMatrix();
-        Matrix4 viewMatrix = obj->getViewMatrix({0.0f, 0.0f, 0.0f}, {120.0f, 160.0f, 5.0f}, {0.0f, 1.0f, 0.0f});
-        Matrix4 projectionMatrix = obj->getProjectionMatrix(90.0f, width / height, 0.1f, 50.0f);
+        Matrix4 viewMatrix = obj->getViewMatrix(camera.position, targerVector, {0.0f, 1.0f, 0.0f});
+        Matrix4 projectionMatrix = obj->getProjectionMatrix(90.0f, width / height, 1.0f, 50.0f);
 
-        Matrix4 MVPMatrix = modelMatrix;
+        Matrix4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
         for (size_t j = 0; j < obj->mesh->indices.size(); j += 3)
         {

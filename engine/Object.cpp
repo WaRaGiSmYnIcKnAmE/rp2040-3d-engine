@@ -16,29 +16,31 @@ Matrix4 Object::getViewMatrix(const Vector3 &cameraPosition, const Vector3 &targ
 {
     Vector3 zAxis = cameraPosition - target;
     Vector3 normZ = normalizeVector(zAxis);
-    Vector3 xAxis = normalizeVector(up * zAxis);
+    Vector3 xAxis = up * zAxis;
+    Vector3 normX = normalizeVector(xAxis);
     Vector3 yAxis = zAxis * xAxis;
+    Vector3 normY = normalizeVector(yAxis);
 
     Matrix4 viewMatrix;
     // Заполняем элементы матрицы построчно
-    viewMatrix.data[0][0] = xAxis.x;
-    viewMatrix.data[0][1] = yAxis.x;
+    viewMatrix.data[0][0] = normX.x;
+    viewMatrix.data[0][1] = normY.x;
     viewMatrix.data[0][2] = normZ.x;
     viewMatrix.data[0][3] = float2fix(0.0f, FIXED_POINT_SHIFT);
 
-    viewMatrix.data[1][0] = xAxis.y;
-    viewMatrix.data[1][1] = yAxis.y;
+    viewMatrix.data[1][0] = normX.y;
+    viewMatrix.data[1][1] = normY.y;
     viewMatrix.data[1][2] = normZ.y;
     viewMatrix.data[1][3] = float2fix(0.0f, FIXED_POINT_SHIFT);
 
-    viewMatrix.data[2][0] = xAxis.z;
-    viewMatrix.data[2][1] = yAxis.z;
+    viewMatrix.data[2][0] = normX.z;
+    viewMatrix.data[2][1] = normY.z;
     viewMatrix.data[2][2] = normZ.z;
     viewMatrix.data[2][3] = float2fix(1.0f, FIXED_POINT_SHIFT);
 
-    viewMatrix.data[3][0] = scalarProduct(-xAxis, cameraPosition);
-    viewMatrix.data[3][1] = scalarProduct(-yAxis, cameraPosition);
-    viewMatrix.data[3][2] = scalarProduct(-zAxis, cameraPosition);
+    viewMatrix.data[3][0] = scalarProduct(-normX, cameraPosition);
+    viewMatrix.data[3][1] = scalarProduct(-normY, cameraPosition);
+    viewMatrix.data[3][2] = scalarProduct(-normZ, cameraPosition);
     viewMatrix.data[3][3] = float2fix(1.0f, FIXED_POINT_SHIFT);
     return viewMatrix;
 }
@@ -62,7 +64,7 @@ Matrix4 Object::getProjectionMatrix(float fov, float aspectRatio, float nearPlan
 
     projectionMatrix.data[2][0] = 0;
     projectionMatrix.data[2][1] = 0;
-    projectionMatrix.data[2][2] = float2fix(-nearPlane - farPlane / zRange, FIXED_POINT_SHIFT);
+    projectionMatrix.data[2][2] = float2fix(farPlane + nearPlane / zRange, FIXED_POINT_SHIFT);
     projectionMatrix.data[2][3] = float2fix(1.0f, FIXED_POINT_SHIFT);
 
     projectionMatrix.data[3][0] = 0;

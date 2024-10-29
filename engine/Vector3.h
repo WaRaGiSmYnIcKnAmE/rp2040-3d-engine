@@ -50,12 +50,13 @@ struct Vector3
         return *this;
     }
 
-    Vector3 operator*(const Vector3 vector) const
+    Vector3 operator*(const Vector3& vector) const
     {
         return Vector3(
-            ((y * vector.z) - (z * vector.y)),
-            -((x * vector.z) - (z * vector.x)),
-            ((x * vector.y) - (y * vector.x)));
+            fix2float(y, FIXED_POINT_SHIFT) * fix2float(vector.z, FIXED_POINT_SHIFT) - fix2float(z, FIXED_POINT_SHIFT) * fix2float(vector.y, FIXED_POINT_SHIFT),
+            -(fix2float(x, FIXED_POINT_SHIFT) * fix2float(vector.z, FIXED_POINT_SHIFT) - fix2float(z, FIXED_POINT_SHIFT) * fix2float(vector.x, FIXED_POINT_SHIFT)),
+            fix2float(x, FIXED_POINT_SHIFT) * fix2float(vector.y, FIXED_POINT_SHIFT) - fix2float(y, FIXED_POINT_SHIFT) * fix2float(vector.x, FIXED_POINT_SHIFT)
+        );
     }
 
     Vector3 &operator*=(Vector3 vector)
@@ -72,14 +73,6 @@ struct Vector3
         outX = fix2float(x, FIXED_POINT_SHIFT);
         outY = fix2float(y, FIXED_POINT_SHIFT);
         outZ = fix2float(z, FIXED_POINT_SHIFT);
-    }
-
-    // Dot product
-    int32_t dot(const Vector3 &other) const
-    {
-        return ((x * other.x)) +
-               ((y * other.y)) +
-               ((z * other.z));
     }
 };
 
