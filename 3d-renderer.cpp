@@ -64,11 +64,11 @@ int main()
 
     // scene.addObject(&planeObject);
 
-    // scene.addObject(&cubeObject);
+    scene.addObject(&cubeObject);
     // scene.addObject(&cubeObject2);
     // scene.addObject(&cubeObject3);
 
-    scene.addObject(&sphereObject);
+    // scene.addObject(&sphereObject);
 
     int xRotation = 0;
     int yRotation = 0;
@@ -96,13 +96,14 @@ int main()
         sphereObject.setRotation(Vector3(x, y, z));
 
         Renderer::renderFrame(frameBuffer, SCREEN_WIDTH, SCREEN_HEIGHT, camera, scene);
-        Vector3 xV = Vector3(10.0f, 10.0f, 3.0f);
-        Vector3 yV = Vector3(10.0f, 15.0f, 5.0f);
-        Vector3 zV = Vector3(20.0f, 20.0f, 11.0f);
 
         xRotation += 3;
         yRotation += 3;
         zRotation += 3;
+
+        ili9341_draw_text(Vector2(15.0f, 15.0f), 1, "FPS: %d\nTimer: %d sec", frameBuffer, fps, get_absolute_time() / (1000 * 1000));
+
+        ili9341_send_framebuffer(frameBuffer);
 
         if (get_absolute_time() - timer >= 1000 * 1000)
         {
@@ -110,10 +111,6 @@ int main()
             frame = 0;
             timer = get_absolute_time();
         }
-
-        ili9341_draw_text(Vector2(15.0f, 15.0f), 1, "FPS: %d\nTimer: %d", frameBuffer, fps, get_absolute_time() / (1000 * 1000));
-
-        ili9341_send_framebuffer(frameBuffer);
     }
 
     return 0;

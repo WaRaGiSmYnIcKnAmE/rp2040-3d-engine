@@ -11,9 +11,12 @@
 
 void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera &camera, Scene &scene)
 {
+    uint32_t depthBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
+
     for (int i = 0; i < width * height; ++i)
     {
         frameBuffer[i] = COLOR_BACKGROUND;
+        depthBuffer[i] = float2fix(1.0f, FIXED_POINT_SHIFT);
     }
 
     float yaw = camera.rotation.y;
@@ -46,84 +49,92 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
             Vector3 vector1 = MVPMatrix * v1.position;
             Vector3 vector2 = MVPMatrix * v2.position;
 
-            // fillTriangle(frameBuffer, vector0, vector1, vector2, Color(255, 255, 255));
+            renderTriangleIfVisible(frameBuffer, vector0, vector1, vector2);
 
-            drawLine(frameBuffer, height, width, vector0, vector1);
-            drawLine(frameBuffer, height, width, vector1, vector2);
-            drawLine(frameBuffer, height, width, vector2, vector0);
+            drawLine(frameBuffer, height, width, vector0, vector1, Color(255, 0, 0));
+            drawLine(frameBuffer, height, width, vector1, vector2, Color(255, 0, 0));
+            drawLine(frameBuffer, height, width, vector2, vector0, Color(255, 0, 0));
         }
     }
 }
 
-void Renderer::fillTriangle(uint16_t *frameBuffer, Vector3 &v0, Vector3 &v1, Vector3 &v2, Color color)
+// Проверка видимости треугольника по его вершинам
+bool Renderer::isTriangleVisible(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2)
 {
-    // Сортируем вершины по y-координате
-    if (v0.y > v1.y)
-        std::swap(v0, v1);
-    if (v1.y > v2.y)
-        std::swap(v1, v2);
-    if (v0.y > v1.y)
-        std::swap(v0, v1);
+    // Проверка: треугольник должен быть перед камерой
+    if (p0.z >= 0 && p1.z >= 0 && p2.z >= 0)
+        return false;
 
-    // Нижний треугольник
-    if (v1.y != v0.y)
+    // Вычисляем векторы ребер треугольника
+    Vector3 edge1 = {p1.x - p0.x, p1.y - p0.y, p1.z - p0.z};
+    Vector3 edge2 = {p2.x - p0.x, p2.y - p0.y, p2.z - p0.z};
+
+    // Вычисляем нормаль через векторное произведение
+    Vector3 normal = edge1 * edge2;
+
+    // Проверка направления нормали (если камера направлена вдоль -Z)
+    return normal.z < 0;
+}
+
+// Пример использования
+void Renderer::renderTriangleIfVisible(uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2)
+{
+    if (isTriangleVisible(p0, p1, p2))
     {
-        for (int32_t y = v0.y; y <= v1.y; y++)
-        {
-            int xStart = interpolate(y, v0, v1);
-            int xEnd = interpolate(y, v0, v2);
-            if (xStart > xEnd)
-                std::swap(xStart, xEnd);
-
-            // Заполняем строку между xStart и xEnd
-            for (int32_t x = xStart; x <= xEnd; x++)
-            {
-                int yScreen = fix2float(y, FIXED_POINT_SHIFT); // Преобразуем для индексации буфера
-                int xScreen = fix2float(x, FIXED_POINT_SHIFT);
-                frameBuffer[yScreen * SCREEN_WIDTH + xScreen] = Color::color565(color.r, color.g, color.b);
-            }
-        }
-    }
-
-    // Верхний треугольник
-    if (v2.y != v1.y)
-    {
-        for (int32_t y = v1.y; y <= v2.y; y++)
-        {
-            int xStart = interpolate(y, v1, v2);
-            int xEnd = interpolate(y, v0, v2);
-            if (xStart > xEnd)
-                std::swap(xStart, xEnd);
-
-            for (int32_t x = xStart; x <= xEnd; x++)
-            {
-                int yScreen = fix2float(y, FIXED_POINT_SHIFT);
-                int xScreen = fix2float(x, FIXED_POINT_SHIFT);
-                frameBuffer[yScreen * SCREEN_WIDTH + xScreen] = Color::color565(color.r, color.g, color.b);
-            }
-        }
+        // Вызов функции fillTriangle или аналогичной для отрисовки
+        fillTriangle(frameBuffer, p0, p1, p2);
     }
 }
 
-int32_t Renderer::interpolate(int32_t y, Vector3 v0, Vector3 v1)
+void Renderer::fillTriangle(uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2)
 {
-    if (v1.y == v0.y)
+    float x0 = fix2float(p0.x, FIXED_POINT_SHIFT);
+    float y0 = fix2float(p0.y, FIXED_POINT_SHIFT);
+    float x1 = fix2float(p1.x, FIXED_POINT_SHIFT);
+    float y1 = fix2float(p1.y, FIXED_POINT_SHIFT);
+    float x2 = fix2float(p2.x, FIXED_POINT_SHIFT);
+    float y2 = fix2float(p2.y, FIXED_POINT_SHIFT);
+
+    if (y0 > y1)
     {
-        return v0.x;
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+    if (y0 > y2)
+    {
+        std::swap(x0, x2);
+        std::swap(y0, y2);
+    }
+    if (y1 > y2)
+    {
+        std::swap(x1, x2);
+        std::swap(y1, y2);
     }
 
-    float yFloat = fix2float(y, FIXED_POINT_SHIFT);
-    float x0Float = fix2float(v0.x, FIXED_POINT_SHIFT);
-    float x1Float = fix2float(v1.x, FIXED_POINT_SHIFT);
-    float y0Float = fix2float(v0.y, FIXED_POINT_SHIFT);
-    float y1Float = fix2float(v1.y, FIXED_POINT_SHIFT);
+    for (float y = y0; y <= y2; y++)
+    {
+        float xStart, xEnd;
 
-    float resultFloat = x0Float + (x1Float - x0Float) * (yFloat - y0Float) / (y1Float - y0Float);
-    return float2fix(resultFloat, FIXED_POINT_SHIFT);
+        if (y < y1)
+        {
+            xStart = x0 + (x1 - x0) * ((y - y0) / (y1 - y0));
+            xEnd = x0 + (x2 - x0) * ((y - y0) / (y2 - y0));
+        }
+        else
+        {
+            xStart = x1 + (x2 - x1) * ((y - y1) / (y2 - y1));
+            xEnd = x0 + (x2 - x0) * ((y - y0) / (y2 - y0));
+        }
+
+        if (xStart > xEnd)
+            std::swap(xStart, xEnd);
+
+        drawLine(frameBuffer, SCREEN_HEIGHT, SCREEN_WIDTH, Vector3(xStart, y, 0.0f), Vector3(xEnd, y, 0.0f), Color(80, 80, 80));
+    }
 }
 
 // The Bresenham algorithm for drawing a line
-void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1)
+void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1, Color color)
 {
     int x0 = fix2float(v0.x, FIXED_POINT_SHIFT);
     int y0 = fix2float(v0.y, FIXED_POINT_SHIFT);
@@ -140,7 +151,7 @@ void Renderer::drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0
     {
         if (x0 >= 0 && x0 < width && y0 >= 0 && y0 < height)
         {
-            frameBuffer[y0 * width + x0] = Color::color565(0, 255, 0);
+            frameBuffer[y0 * width + x0] = Color::color565(color.r, color.g, color.b);
         }
 
         if (x0 == x1 && y0 == y1)

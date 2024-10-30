@@ -166,7 +166,7 @@ void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, u
         else
         {
             ili9341_render_char(frameBuffer, x, y, *text, fontSize);
-            y += 8 * fontSize;
+            y += 7 * fontSize;
         }
         text++;
     }
