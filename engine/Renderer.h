@@ -12,15 +12,14 @@
 class Renderer
 {
 public:
-    // Основная функция рендера
     static void renderFrame(uint16_t *frameBuffer, int width, int height, Camera &camera, Scene &scene);
 
+    static void fillTriangle(uint16_t *frameBuffer, Vector3 &v0, Vector3 &v1, Vector3 &v2, Color color);
     static void drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1);
 
 private:
-    // Помощники для проекции и вычислений видимости
-    static Vector3 projectVertex(const Vector3 &position, int width, int height, const Matrix4 &viewMatrix, const Matrix4 &projectionMatrix);
     static bool isInClipSpace(const Vector3 &vertex);
+    static int32_t interpolate(int32_t y, Vector3 v0, Vector3 v1);
 };
 
 #endif // RENDERER_H

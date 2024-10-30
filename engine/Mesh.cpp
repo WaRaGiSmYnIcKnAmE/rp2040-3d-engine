@@ -66,10 +66,10 @@ Mesh Mesh::createPlane(float width, float depth)
     float halfWidth = width / 2;
     float halfDepth = depth / 2;
     plane.vertices = {
-        Vertex({-halfWidth, 0, -halfDepth}, {0, 0}),
-        Vertex({halfWidth, 0, -halfDepth}, {0, 0}),
-        Vertex({halfWidth, 0, halfDepth}, {0, 0}),
-        Vertex({-halfWidth, 0, halfDepth}, {0, 0}),
+        Vertex({-halfWidth, 0, -halfDepth}, {0.0f, 0.0f}),
+        Vertex({halfWidth, 0, -halfDepth}, {0.0f, 0.0f}),
+        Vertex({halfWidth, 0, halfDepth}, {0.0f, 0.0f}),
+        Vertex({-halfWidth, 0, halfDepth}, {0.0f, 0.0f}),
     };
 
     // Индексы
@@ -87,14 +87,14 @@ Mesh Mesh::createCube(int sideLength)
     float halfSide = sideLength / 2;
 
     cube.vertices = {
-        Vertex({-halfSide, -halfSide, -halfSide}, {0, 0}),
-        Vertex({halfSide, -halfSide, -halfSide}, {0, 0}),
-        Vertex({halfSide, halfSide, -halfSide}, {0, 0}),
-        Vertex({-halfSide, halfSide, -halfSide}, {0, 0}),
-        Vertex({-halfSide, -halfSide, halfSide}, {0, 0}),
-        Vertex({halfSide, -halfSide, halfSide}, {0, 0}),
-        Vertex({halfSide, halfSide, halfSide}, {0, 0}),
-        Vertex({-halfSide, halfSide, halfSide}, {0, 0})};
+        Vertex({-halfSide, -halfSide, -halfSide}, {0.0f, 0.0f}),
+        Vertex({halfSide, -halfSide, -halfSide}, {0.0f, 0.0f}),
+        Vertex({halfSide, halfSide, -halfSide}, {0.0f, 0.0f}),
+        Vertex({-halfSide, halfSide, -halfSide}, {0.0f, 0.0f}),
+        Vertex({-halfSide, -halfSide, halfSide}, {0.0f, 0.0f}),
+        Vertex({halfSide, -halfSide, halfSide}, {0.0f, 0.0f}),
+        Vertex({halfSide, halfSide, halfSide}, {0.0f, 0.0f}),
+        Vertex({-halfSide, halfSide, halfSide}, {0.0f, 0.0f})};
 
     cube.indices = {
         0, 1, 2, 2, 3, 0, // Задняя грань
@@ -127,7 +127,7 @@ Mesh Mesh::createSphere(float radius, int sectors)
             float y = radius * cosf(phi);
             float z = radius * sinf(phi) * sinf(theta);
 
-            sphere.vertices.push_back(Vertex({x, y, z}, {0, 0}));
+            sphere.vertices.push_back(Vertex({x, y, z}, {0.0f, 0.0f}));
         }
     }
 
@@ -159,11 +159,11 @@ Mesh Mesh::createPyramid(float baseLength, float height)
     // Вершины
     float halfBase = baseLength / 2;
     pyramid.vertices = {
-        Vertex({0, height, 0}, {0, 0}),            // Вершина
-        Vertex({-halfBase, 0, -halfBase}, {0, 0}), // Задний левый угол
-        Vertex({halfBase, 0, -halfBase}, {0, 0}),  // Задний правый угол
-        Vertex({halfBase, 0, halfBase}, {0, 0}),   // Передний правый угол
-        Vertex({-halfBase, 0, halfBase}, {0, 0})   // Передний левый угол
+        Vertex({0, height, 0}, {0.0f, 0.0f}),            // Вершина
+        Vertex({-halfBase, 0, -halfBase}, {0.0f, 0.0f}), // Задний левый угол
+        Vertex({halfBase, 0, -halfBase}, {0.0f, 0.0f}),  // Задний правый угол
+        Vertex({halfBase, 0, halfBase}, {0.0f, 0.0f}),   // Передний правый угол
+        Vertex({-halfBase, 0, halfBase}, {0.0f, 0.0f})   // Передний левый угол
     };
 
     // Индексы
@@ -183,7 +183,7 @@ Mesh Mesh::createCone(float radius, float height, int sectors)
     Mesh cone;
 
     // Вершина конуса
-    cone.vertices.push_back(Vertex({0, height, 0}, {0, 0}));
+    cone.vertices.push_back(Vertex({0, height, 0}, {0.0f, 0.0f}));
 
     // Вершины основания
     for (int i = 0; i <= sectors; ++i)
@@ -191,7 +191,7 @@ Mesh Mesh::createCone(float radius, float height, int sectors)
         float theta = i * 2 * M_PI / sectors;
         float x = radius * cosf(theta);
         float z = radius * sinf(theta);
-        cone.vertices.push_back(Vertex({x, 0, z}, {0, 0}));
+        cone.vertices.push_back(Vertex({x, 0, z}, {0.0f, 0.0f}));
     }
 
     // Индексы

@@ -15,7 +15,7 @@ struct Vector2
 
     Vector2(int32_t x, int32_t y) : x(x), y(y) {}
 
-    Vector2(float x, float y, float z)
+    Vector2(float x, float y)
         : x(float2fix(x, FIXED_POINT_SHIFT)),
           y(float2fix(y, FIXED_POINT_SHIFT)) {}
 

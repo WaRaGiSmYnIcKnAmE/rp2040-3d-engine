@@ -144,78 +144,72 @@ void ili9341_send_data_dma(uint8_t *data, size_t length)
     dma_channel_unclaim(dma_channel);
 }
 
-// Простейшая функция для вывода текста на дисплей
-void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, ...)
+void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, uint16_t *frameBuffer, ...)
 {
     char buffer[512]; // Буфер для форматированной строки
-
-    // Инициализация переменных аргументов
     va_list args;
-    va_start(args, format);
-
-    // Форматирование строки с переменными аргументами
+    va_start(args, frameBuffer); // Начинаем с frameBuffer как последнего обязательного аргумента
     vsnprintf(buffer, sizeof(buffer), format, args);
-
-    // Завершение работы с переменными аргументами
     va_end(args);
 
-    int x = position.x;
-    int y = position.y;
-
+    int x = fix2float(position.x, FIXED_POINT_SHIFT);
+    int y = fix2float(position.y, FIXED_POINT_SHIFT);
     const char *text = buffer;
+
     while (*text)
     {
         if (*text == '\n')
         {
             x += 8 * fontSize;
-            y = position.y;
+            y = fix2float(position.y, FIXED_POINT_SHIFT);
         }
         else
         {
-            ili9341_render_char(x, y, *text, fontSize);
-            y += 6 * fontSize;
+            ili9341_render_char(frameBuffer, x, y, *text, fontSize);
+            y += 8 * fontSize;
         }
-
         text++;
     }
-
-    // delete[] buffer;
 }
 
-// Отображение символа на дисплей
-void ili9341_render_char(uint16_t x, uint16_t y, char c, uint8_t fontSize)
+// Рендер символа в буфер кадра
+void ili9341_render_char(uint16_t *frameBuffer, uint16_t x, uint16_t y, char c, uint8_t fontSize)
 {
     const uint8_t *glyph = font_get_bitmap(c);
-    uint16_t color = 0xFFFF; // Цвет символа (например, белый)
+    uint16_t color = 0xFFFF;
 
-    // Проходим по строкам и столбцам символа
     for (int row = 0; row < 7; ++row)
     {
         for (int col = 0; col < 5; ++col)
         {
             if (glyph[col] & (1 << (6 - row)))
-            { // Проверка нужного бита в байте столбца
-                ili9341_fill_rect(x + col * fontSize, y + row * fontSize, fontSize, fontSize, 0xFFFF);
+            {
+                ili9341_fill_rect(frameBuffer, x + col * fontSize, y + row * fontSize, fontSize, fontSize, color);
+            }
+            else
+            {
+                ili9341_fill_rect(frameBuffer, x + col * fontSize, y + row * fontSize, fontSize, fontSize, 0x0000);
             }
         }
     }
 }
 
-void ili9341_fill_rect(int x, int y, int w, int h, uint16_t color)
+void ili9341_fill_rect(uint16_t *frameBuffer, int x, int y, int w, int h, uint16_t color)
 {
     for (int i = 0; i < h; i++)
     {
-        for (int j = 0; j < h; j++)
+        for (int j = 0; j < w; j++)
         {
-            ili9341_draw_pixel(x + i, y + j, color);
+            ili9341_draw_pixel(frameBuffer, x + i, y + j, color);
         }
     }
 }
 
-void ili9341_draw_pixel(int x, int y, uint16_t color)
+void ili9341_draw_pixel(uint16_t *frameBuffer, int x, int y, uint16_t color)
 {
-    set_address_window(x, y, x, y); // Для ILI9341 240x320
-
-    uint8_t data[2] = {(color >> 8), (color & 0xFF)};
-    send_data(data, 2); // Отправляем цвет пикселя
+    // Убедимся, что координаты внутри допустимого диапазона буфера
+    if (x >= 0 && x < 240 && y >= 0 && y < 320)
+    {
+        frameBuffer[y * 240 + x] = color; // Записываем цвет в буфер кадра
+    }
 }

@@ -6,6 +6,7 @@
 #include "hardware/dma.h"
 #include "pico/multicore.h"
 #include "engine/Vector2.h"
+#include "engine/Color.h"
 
 #include "Defines.h"
 
@@ -137,12 +138,12 @@ void set_address_window(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 // Fill screen
 void fill_screen(uint16_t color);
 
-void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, ...);
+void ili9341_draw_text(Vector2 position, uint8_t fontSize, const char *format, uint16_t *frameBuffer, ...);
 
-void ili9341_render_char(uint16_t x, uint16_t y, char c, uint8_t fontSize);
+void ili9341_render_char(uint16_t *frameBuffer, uint16_t x, uint16_t y, char c, uint8_t fontSize);
 
-void ili9341_fill_rect(int x, int y, int w, int h, uint16_t color);
+void ili9341_fill_rect(uint16_t *frameBuffer, int x, int y, int w, int h, uint16_t color);
 
-void ili9341_draw_pixel(int x, int y, uint16_t color);
+void ili9341_draw_pixel(uint16_t *frameBuffer, int x, int y, uint16_t color);
 
 #endif // ILI9341_H
