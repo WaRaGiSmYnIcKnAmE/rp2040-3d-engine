@@ -9,14 +9,12 @@
 
 #define FOCAL_LENGTH 255
 
-void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera &camera, Scene &scene)
+void Renderer::renderFrame(uint8_t *depthBuffer, uint16_t *frameBuffer, int width, int height, Camera &camera, Scene &scene)
 {
-    uint32_t depthBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
-
     for (int i = 0; i < width * height; ++i)
     {
         frameBuffer[i] = COLOR_BACKGROUND;
-        depthBuffer[i] = float2fix(1.0f, FIXED_POINT_SHIFT);
+        depthBuffer[i] = 0xFF;
     }
 
     float yaw = camera.rotation.y;
@@ -49,7 +47,7 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
             Vector3 vector1 = MVPMatrix * v1.position;
             Vector3 vector2 = MVPMatrix * v2.position;
 
-            renderTriangleIfVisible(frameBuffer, vector0, vector1, vector2);
+            // fillTriangle(depthBuffer, frameBuffer, vector0, vector1, vector2);
 
             drawLine(frameBuffer, height, width, vector0, vector1, Color(255, 0, 0));
             drawLine(frameBuffer, height, width, vector1, vector2, Color(255, 0, 0));
@@ -58,35 +56,7 @@ void Renderer::renderFrame(uint16_t *frameBuffer, int width, int height, Camera 
     }
 }
 
-// Проверка видимости треугольника по его вершинам
-bool Renderer::isTriangleVisible(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2)
-{
-    // Проверка: треугольник должен быть перед камерой
-    if (p0.z >= 0 && p1.z >= 0 && p2.z >= 0)
-        return false;
-
-    // Вычисляем векторы ребер треугольника
-    Vector3 edge1 = {p1.x - p0.x, p1.y - p0.y, p1.z - p0.z};
-    Vector3 edge2 = {p2.x - p0.x, p2.y - p0.y, p2.z - p0.z};
-
-    // Вычисляем нормаль через векторное произведение
-    Vector3 normal = edge1 * edge2;
-
-    // Проверка направления нормали (если камера направлена вдоль -Z)
-    return normal.z < 0;
-}
-
-// Пример использования
-void Renderer::renderTriangleIfVisible(uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2)
-{
-    if (isTriangleVisible(p0, p1, p2))
-    {
-        // Вызов функции fillTriangle или аналогичной для отрисовки
-        fillTriangle(frameBuffer, p0, p1, p2);
-    }
-}
-
-void Renderer::fillTriangle(uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2)
+void Renderer::fillTriangle(uint8_t *depthBuffer, uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2)
 {
     float x0 = fix2float(p0.x, FIXED_POINT_SHIFT);
     float y0 = fix2float(p0.y, FIXED_POINT_SHIFT);

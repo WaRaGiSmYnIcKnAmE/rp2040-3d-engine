@@ -13,15 +13,15 @@
 class Renderer
 {
 public:
-    static void renderFrame(uint16_t *frameBuffer, int width, int height, Camera &camera, Scene &scene);
-
-    static void fillTriangle(uint16_t *frameBuffer, Vector3 &v0, Vector3 &v1, Vector3 &v2, Color color);
+    static void renderFrame(uint8_t *depthBuffer, uint16_t *frameBuffer, int width, int height, Camera &camera, Scene &scene);
     static void drawLine(uint16_t *frameBuffer, int width, int height, Vector3 v0, Vector3 v1, Color color);
 
 private:
-    static bool isTriangleVisible(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2);
-    static void renderTriangleIfVisible(uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2);
-    static void fillTriangle(uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2);
+    static void fillTriangle(uint8_t *depthBuffer, uint16_t *frameBuffer, Vector3 p0, Vector3 p1, Vector3 p2);
+
+    static bool checkAndUpdateDepth(uint8_t *depthBuffer, int x, int y, int width, float depth);
+    static uint8_t floatToDepth(float depth);
+    static float calculateDepthAtPixel(float x, float y, const Vector3 &p0, const Vector3 &p1, const Vector3 &p2);
 };
 
 #endif // RENDERER_H

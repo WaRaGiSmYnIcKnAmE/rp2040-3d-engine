@@ -7,6 +7,7 @@
 #define PI 3.14159265358979323846
 
 uint16_t frameBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
+uint8_t depthBuffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
 Camera camera;
 Scene scene;
@@ -95,7 +96,7 @@ int main()
 
         sphereObject.setRotation(Vector3(x, y, z));
 
-        Renderer::renderFrame(frameBuffer, SCREEN_WIDTH, SCREEN_HEIGHT, camera, scene);
+        Renderer::renderFrame(depthBuffer, frameBuffer, SCREEN_WIDTH, SCREEN_HEIGHT, camera, scene);
 
         xRotation += 3;
         yRotation += 3;
